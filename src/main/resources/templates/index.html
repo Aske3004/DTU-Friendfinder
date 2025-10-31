@@ -1,30 +1,13 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User List</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
-</head>
-<body class="container">
-<h1>Users</h1>
-<form th:action="@{/add}" th:object="${newUser}" method="post">
-    <input type="text" th:field="*{name}" placeholder="Name" required>
-    <input type="email" th:field="*{email}" placeholder="Email" required>
-    <button type="submit">Add User</button>
-</form>
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
 
-<h2>Existing Users</h2>
-<table>
-    <thead>
-    <tr><th>ID</th><th>Name</th><th>Email</th></tr>
-    </thead>
-    <tbody>
-    <tr th:each="u : ${users}">
-        <td th:text="${u.id}"></td>
-        <td th:text="${u.name}"></td>
-        <td th:text="${u.email}"></td>
-    </tr>
-    </tbody>
-</table>
+<head th:replace="~{fragments/head ::head}"></head>
+
+<body class = "container">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<h1 th:text="'Welcome, ' + ${session.auth.user().getName()}"></h1>
+
+<footer th:replace="~{fragments/footer ::footer}"></footer>
 </body>
 </html>

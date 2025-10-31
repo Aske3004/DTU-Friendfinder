@@ -1,0 +1,66 @@
+package com.friendfinder.controller;
+
+import com.friendfinder.exceptions.InvalidEmailException;
+import com.friendfinder.exceptions.InvalidPasswordException;
+import com.friendfinder.model.User;
+import com.friendfinder.services.AuthenticatorService;
+import com.friendfinder.utils.Field;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class AppController {
+
+    private final AuthenticatorService authenticatorService;
+
+    public AppController(AuthenticatorService authenticatorService) {
+        this.authenticatorService = authenticatorService;
+    }
+
+    @GetMapping("/")
+    public String index(Model model, HttpSession session) {
+        if (session.getAttribute("auth") == null) {
+            return "redirect:/login";
+        }
+
+        return "index";
+    }
+
+    @GetMapping("/login")
+    public String login(Model model) {
+        model.addAttribute("email", new Field("Email", "email", "Email", null, null));
+        model.addAttribute("password", new Field("Password", "password", "Password", null, null));
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String postLogin(@ModelAttribute("user") User user, Model model, HttpSession session) {
+        String emailMessage = "";
+        String passwordMessage = "";
+
+        try {
+            AuthenticatorService.Auth auth = authenticatorService.authenticate(user.getEmail(), user.getPassword());
+            session.setAttribute("auth", auth);
+            return "redirect:/";
+        } catch (InvalidEmailException e) {
+            System.err.println(e.getMessage());
+            emailMessage = e.getMessage();
+        } catch (InvalidPasswordException e) {
+            System.err.println(e.getMessage());
+            passwordMessage = e.getMessage();
+        }
+
+        model.addAttribute("email", new Field("Email", "email", "Email", user.getEmail(), emailMessage));
+        model.addAttribute("password", new Field("Password", "password", "Password", null, passwordMessage));
+        return "login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+
+}
