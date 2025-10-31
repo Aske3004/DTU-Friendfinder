@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/create-user")
-    public String createUser(@ModelAttribute("user") User user, HttpSession session, Model model) {
+    public String postCreateUser(@ModelAttribute("user") User user, HttpSession session, Model model) {
         String nameMessage = "";
         String emailMessage = "";
         String passwordMessage = "";
