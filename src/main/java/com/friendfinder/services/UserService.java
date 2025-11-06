@@ -11,5 +11,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    public Iterable<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
     public User findUser(String email) {return userRepository.findByEmail(email.toLowerCase());}
 }

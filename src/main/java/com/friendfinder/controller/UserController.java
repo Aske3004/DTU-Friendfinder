@@ -62,4 +62,14 @@ public class UserController {
 
         return "create-user";
     }
+    @GetMapping("/all")
+    public String listUsers(Model model, HttpSession session) {
+        var auth = session.getAttribute("auth");
+        if (auth == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("users", userService.findAllUsers());
+        return "users";
+    }
 }

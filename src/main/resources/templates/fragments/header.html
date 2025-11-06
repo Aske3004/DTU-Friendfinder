@@ -31,6 +31,13 @@
   <nav class="container">
     <ul>
       <li><a href="/display" class="secondary">About</a></li>
+      <li th:if="${session.auth != null}">
+        <a href="/users/all" class="secondary">Users</a>
+      </li>
+    </ul>
+
+    <ul>
+      <li><a href="/display" class="secondary">About</a></li>
     </ul>
 
     <ul>
