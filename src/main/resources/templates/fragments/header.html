@@ -45,8 +45,8 @@
     </ul>
     <ul>
       <li style="display: flex; align-items: center; gap: 0.5rem;">
-        <a th:if="${session.auth != null}" th:href="'/profile?id=' + ${session.auth.user().getEmail()}" th:text="${session.auth.user().getName()}" style="display: flex; align-items: center; font-size: 0.9rem"></a>
-        <a th:href="'/profile?id=' + ${session.auth?.user()?.getEmail()}" class="secondary" style="display: flex; align-items: center;">
+        <a th:if="${session.auth != null}" th:href="'/users/user-profile'" th:text="${session.auth.user().getName()}" style="display: flex; align-items: center; font-size: 0.9rem"></a>
+        <a th:href="'/users/user-profile'" class="secondary" style="display: flex; align-items: center;">
           <svg width="1rem" height="1rem" viewBox="0 0 16 16"
                xmlns="http://www.w3.org/2000/svg">
             <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z"

@@ -72,4 +72,13 @@ public class UserController {
         model.addAttribute("users", userService.findAllUsers());
         return "users";
     }
+
+    @GetMapping("/user-profile")
+    public String userprofile(Model model) {
+        model.addAttribute("name", new Field("Text", "name", "Name", null, null));
+        model.addAttribute("email", new Field("Email", "email", "Test", null, null));
+        model.addAttribute("password", new Field("Password", "password", "Password", null, null));
+
+        return "user-profile";
+    }
 }

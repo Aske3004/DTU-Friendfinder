@@ -43,6 +43,7 @@ public class AppController {
         try {
             AuthenticatorService.Auth auth = authenticatorService.authenticate(user.getEmail(), user.getPassword());
             session.setAttribute("auth", auth);
+            session.setAttribute("user", user);
             return "redirect:/";
         } catch (InvalidEmailException e) {
             System.err.println(e.getMessage());
