@@ -74,10 +74,27 @@ public class UserController {
     }
 
     @GetMapping("/user-profile")
-    public String userprofile(Model model) {
-        model.addAttribute("name", new Field("Text", "name", "Name", null, null));
-        model.addAttribute("email", new Field("Email", "email", "Test", null, null));
+    public String userprofile(Model model, HttpSession session) {
+        var user = (User) session.getAttribute("user");
+        model.addAttribute("name", new Field("Text", "name", user.getName(), null, null));
+        model.addAttribute("email", new Field("Email", "email", user.getEmail(), null, null));
         model.addAttribute("password", new Field("Password", "password", "Password", null, null));
+
+        return "user-profile";
+    }
+
+    @PostMapping("/update-name")
+    public String updateName(@ModelAttribute("user") User user, HttpSession session, Model model) {
+        String nameMessage = "";
+        try {
+            var user1 = (User) session.getAttribute("user");
+            String name = user.getName();
+            user1.setName(name);
+            userService.updateUser(user1); //TODO virker ikke
+            session.setAttribute("name", name);
+        }  catch (NullPointerException e) {
+            System.err.println(e.getMessage());
+        }
 
         return "user-profile";
     }

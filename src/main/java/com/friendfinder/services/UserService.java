@@ -16,4 +16,8 @@ public class UserService {
     }
 
     public User findUser(String email) {return userRepository.findByEmail(email.toLowerCase());}
+
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
 }
