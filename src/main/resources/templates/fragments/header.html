@@ -45,7 +45,7 @@
     </ul>
     <ul>
       <li style="display: flex; align-items: center; gap: 0.5rem;">
-        <a th:if="${session.auth != null}" th:href="'/users/user-profile'" th:text="${session.auth.user().getName()}" style="display: flex; align-items: center; font-size: 0.9rem"></a>
+        <a th:if="${session.auth != null}" th:href="'/users/user-profile'" th:text="${session.name}" style="display: flex; align-items: center; font-size: 0.9rem"></a>
         <a th:href="'/users/user-profile'" class="secondary" style="display: flex; align-items: center;">
           <svg width="1rem" height="1rem" viewBox="0 0 16 16"
                xmlns="http://www.w3.org/2000/svg">

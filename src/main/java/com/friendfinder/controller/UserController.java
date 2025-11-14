@@ -41,6 +41,7 @@ public class UserController {
             authenticatorService.register(user);
             AuthenticatorService.Auth auth = authenticatorService.authenticate(user.getEmail(), rawPassword);
             session.setAttribute("auth", auth);
+            session.setAttribute("name", user.getName());
             return "redirect:/";
         } catch (NullPointerException e) {
             System.err.println(e.getMessage());
@@ -76,7 +77,7 @@ public class UserController {
     @GetMapping("/user-profile")
     public String userprofile(Model model, HttpSession session) {
         var user = (User) session.getAttribute("user");
-        model.addAttribute("name", new Field("Text", "name", user.getName(), null, null));
+        model.addAttribute("name", new Field("Text", "name", (String) session.getAttribute("name"), null, null));
         model.addAttribute("email", new Field("Email", "email", user.getEmail(), null, null));
         model.addAttribute("password", new Field("Password", "password", "Password", null, null));
 
@@ -89,13 +90,24 @@ public class UserController {
         try {
             var user1 = (User) session.getAttribute("user");
             String name = user.getName();
-            user1.setName(name);
-            userService.updateUser(user1); //TODO virker ikke
+            userService.updateUserName(name, user1.getEmail());
             session.setAttribute("name", name);
         }  catch (NullPointerException e) {
             System.err.println(e.getMessage());
         }
 
-        return "user-profile";
+        return "redirect:/users/user-profile";
+    }
+
+    @PostMapping("/delete-user")
+    public String deleteUser(@ModelAttribute("user") User user, HttpSession session, Model model) {
+        try {
+            User user1 = (User) session.getAttribute("user");
+            userService.deleteUser(user1.getEmail());
+            return "redirect:/login";
+        }   catch (NullPointerException e) {
+            System.err.println(e.getMessage());
+        }
+        return "redirect:/users/user-profile";
     }
 }
