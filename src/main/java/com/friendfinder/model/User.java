@@ -1,6 +1,7 @@
 package com.friendfinder.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidNameException;
@@ -8,6 +9,8 @@ import com.friendfinder.exceptions.InvalidPasswordException;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_table")
@@ -20,7 +23,7 @@ public class User {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long userId;
     private String name;
 
     @Column(unique = true)
@@ -31,9 +34,13 @@ public class User {
     @ManyToMany
     private List<User> friends;
 
+    @ManyToMany(mappedBy = "participants")
+    @JsonIgnore
+    private Set<Chat> chats = new HashSet<>();
+
     // getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long id) { this.userId = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getEmail() { return email; }
@@ -42,6 +49,8 @@ public class User {
     public void setFriends(List<User> friends) { this.friends = friends; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public Set<Chat> getChats() { return chats; }
+    public void setChats(Set<Chat> chats) { this.chats = chats; }
 
     public static void isEmailValid(String email) throws InvalidEmailException {
         if (email == null || email.isEmpty()) {
@@ -82,5 +91,23 @@ public class User {
         if (!name.matches("^[A-Za-zÆØÅæøå]+(?: [A-Za-zÆØÅæøå]+)*$")) {
             throw new InvalidNameException("Name must contain only letters and single spaces");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", chatCount=" + (chats != null ? chats.size() : 0) +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userId != null && userId.equals(user.getUserId());
     }
 }

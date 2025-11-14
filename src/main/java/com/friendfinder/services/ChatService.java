@@ -52,7 +52,7 @@ public class ChatService {
 
         return chats.stream()
                 .map(chat -> {
-                    Message lastMessage = messageRepository.findTopBychatOrderByTimestampDesc(chat);
+                    Message lastMessage = messageRepository.findTopByChatOrderByTimestampDesc(chat);
                     MessageDTO lastMessageDTO = lastMessage != null ? new MessageDTO(lastMessage) : null;
                     return new ChatDTO(chat, lastMessageDTO);
                 })
@@ -69,7 +69,7 @@ public class ChatService {
         // Check if dm already exists
         List<Chat> user1Chats = chatRepository.findByParticipantsUserId(user1Id);
         for (Chat chat : user1Chats) {
-            if ("DIRECT".equals(chat.getChatType()) && chat.getparticipants().contains(user2)) {
+            if ("DIRECT".equals(chat.getChatType()) && chat.getParticipants().contains(user2)) {
                 return new ChatDTO(chat);
             }
         }
@@ -137,8 +137,11 @@ public class ChatService {
     }
 
     public boolean isUserInChat(Long chatId, Long userId) {
+        if (chatId == null || userId == null) {
+            return false;
+        }
         Chat chat = chatRepository.findById(chatId)
-                .orElsethrow(() -> new RuntimeException("Chat" + chatId + "not found"));
+                .orElseThrow(() -> new RuntimeException("Chat" + chatId + "not found"));
 
         return chat.getParticipants().stream()
                 .anyMatch(user -> user.getUserId().equals(userId));
