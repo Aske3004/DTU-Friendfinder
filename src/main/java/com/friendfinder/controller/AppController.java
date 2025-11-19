@@ -46,6 +46,7 @@ public class AppController {
             session.setAttribute("user", user);
             User user1 = auth.user();
             session.setAttribute("name", user1.getName());
+            session.setAttribute("email", user1.getEmail());
             return "redirect:/";
         } catch (InvalidEmailException e) {
             System.err.println(e.getMessage());

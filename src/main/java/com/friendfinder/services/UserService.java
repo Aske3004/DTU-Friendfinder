@@ -27,6 +27,13 @@ public class UserService {
     }
 
     @Transactional
+    public User updateUserEmail(@Param("newemail") String newemail, @Param("email") String email) {
+        User user = userRepository.findByEmail(email.toLowerCase());
+        user.setEmail(newemail);
+        return userRepository.save(user);
+    }
+
+    @Transactional
     public void deleteUser(@Param("email") String email) {
         User user = userRepository.findByEmail(email.toLowerCase());
         userRepository.delete(user);
