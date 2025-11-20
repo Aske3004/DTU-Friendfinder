@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body class="container">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<h2 style="text-align: center;">Your Friends</h2>
+
+<table style="margin: auto; width: 70%;">
+    <thead>
+    <tr><th>Name</th><th>Email</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="friend : ${friends}">
+        <td th:text="${friend.name}"></td>
+        <td th:text="${friend.email}"></td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(friends)}">
+        <td colspan="2" style="text-align: center;"><em>You don’t have any friends yet 😢</em></td>
+    </tr>
+    </tbody>
+</table>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

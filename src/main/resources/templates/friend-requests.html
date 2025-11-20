@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/head :: head}"></head>
+<body class="container">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<h2 style="text-align: center;">Friend Requests</h2>
+
+<table style="margin: auto; width: 80%;">
+    <thead>
+    <tr>
+        <th>From</th>
+        <th style="text-align:center;">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr th:each="req : ${requests}">
+        <td th:text="${req.sender.name} + ' (' + ${req.sender.email} + ')'">Sender info</td>
+        <td style="display: flex; justify-content: center; gap: 0.5rem;">
+            <form th:action="@{'/friends/accept/' + ${req.id}}" method="post">
+                <button type="submit" role="button">✅ Accept</button>
+            </form>
+            <form th:action="@{'/friends/decline/' + ${req.id}}" method="post">
+                <button type="submit" role="button" class="secondary">❌ Decline</button>
+            </form>
+        </td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(requests)}">
+        <td colspan="2" style="text-align: center;">
+            <em>No pending friend requests</em>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -6,39 +6,68 @@
 <body class="container">
 <header th:replace="~{fragments/header :: header}"></header>
 
-<h1>All Users</h1>
+<h1 style="text-align: center;">All Users</h1>
 
-<table>
+<table style="margin: auto; width: 80%;">
     <thead>
     <tr>
         <th>Name</th>
         <th>Email</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="user : ${users}">
         <td th:text="${user.name}"></td>
         <td th:text="${user.email}"></td>
-        <td>
+        <td style="text-align: center;">
+
+            <!-- Vis "You" på ens egen bruger -->
             <span th:if="${user.email == currentUser.email}">You</span>
 
-            <span class="request-sent"
-                  th:if="${#bools.isTrue(friendService.hasPendingRequest(currentUser, user))}">
-        Request sent
-      </span>
+            <!-- Vis "Already friends" -->
+            <span th:if="${#lists.contains(friendEmails, user.email)}"
+                  style="color: green; font-weight: bold;">✅ Already friends</span>
 
+            <!-- Vis "Request sent" -->
+            <span th:if="${#lists.contains(sentRequestEmails, user.email)}"
+                  style="color: gray;">Request sent</span>
+
+            <!-- Kun vis knap, hvis der ikke er sendt request og de ikke er venner -->
             <a th:if="${user.email != currentUser.email
-                  and !friendService.hasPendingRequest(currentUser, user)}"
+          and !#lists.contains(sentRequestEmails, user.email)
+          and !#lists.contains(friendEmails, user.email)}"
                th:href="@{'/friends/add/' + ${user.email}}"
                role="button"
-               class="secondary">➕ Send request</a>
+               class="secondary send-request">Send request</a>
+
         </td>
     </tr>
     </tbody>
-
-
 </table>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("a.send-request").forEach(button => {
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          const url = button.getAttribute("href");
+
+          fetch(url, { method: "GET" })
+            .then(() => {
+              const span = document.createElement("span");
+              span.textContent = "Request sent";
+              span.style.color = "gray";
+              span.style.fontStyle = "italic";
+              button.replaceWith(span);
+            })
+            .catch(err => console.error("Error sending request:", err));
+        });
+      });
+    });
+</script>
+
 </body>
 </html>
