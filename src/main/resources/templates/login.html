@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
-<head th:replace="~{fragments/head ::head}"></head>
+<head th:replace="~{fragments/head :: head}"></head>
 
-<body class="container">
-<header th:replace="~{fragments/header :: header}"></header>
+<body class="container-fluid">
 
-<h1>Welcome, sign in</h1>
-<form th:action="@{/login}" th:object="${user}" method="post">
-    <label th:replace="~{fragments/field :: field(${email})}"></label>
-    <label th:replace="~{fragments/field :: field(${password})}"></label>
-    <button type="submit">Sign in</button>
-</form>
+<main class="login-wrapper">
+    <div class="login-card">
+        <div class="logo-section">
+            <img th:src="@{/images/dtu_logo.png}" alt="DTU Logo" class="logo">
+            <h1>FriendFinder</h1>
+        </div>
 
-<a href="/users/create-user">Create user</a>
+        <!-- Login form -->
+        <form th:action="@{/login}" th:object="${user}" method="post" class="login-box">
+            <label th:replace="~{fragments/field :: field(${email}, false)}"></label>
+            <label th:replace="~{fragments/field :: field(${password}, false)}"></label>
 
-<footer th:replace="~{fragments/footer ::footer}"></footer>
+            <button type="submit" class="login-btn">Sign in</button>
+        </form>
+
+        <div class="links">
+            <a th:href="@{/forgot-password}" class="link">Forgot password?</a>
+            <a th:href="@{/users/create-user}" class="link secondary">Create user</a>
+        </div>
+    </div>
+</main>
+
 </body>
 </html>
