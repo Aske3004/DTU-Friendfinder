@@ -39,18 +39,53 @@ public class User {
     private Set<Chat> chats = new HashSet<>();
 
     // getters and setters
-    public Long getUserId() { return userId; }
-    public void setUserId(Long id) { this.userId = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public List<User> getFriends() { return friends; }
-    public void setFriends(List<User> friends) { this.friends = friends; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public Set<Chat> getChats() { return chats; }
-    public void setChats(Set<Chat> chats) { this.chats = chats; }
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long id) {
+        this.userId = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<User> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Chat> getChats() {
+        return chats;
+    }
+
+    public void setChats(Set<Chat> chats) {
+        this.chats = chats;
+    }
 
     public static void isEmailValid(String email) throws InvalidEmailException {
         if (email == null || email.isEmpty()) {
@@ -110,4 +145,5 @@ public class User {
         User user = (User) o;
         return userId != null && userId.equals(user.getUserId());
     }
+
 }

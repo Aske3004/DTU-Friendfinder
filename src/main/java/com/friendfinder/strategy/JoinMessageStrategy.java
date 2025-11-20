@@ -8,8 +8,8 @@ public class JoinMessageStrategy implements MessageTypeStrategy {
 
     @Override
     public void processMessage(Message message) {
-        message.setContent(message.getSender().getUsername() + " joined the chat");
-        System.out.println("User joined: " + message.getSender().getUsername());
+        message.setContent(message.getSender().getName() + " joined the chat");
+        System.out.println("User joined: " + message.getSender().getName());
     }
 
     @Override
