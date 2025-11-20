@@ -39,12 +39,12 @@ public class UserTest {
     @Test
     void testGettersAndSetters() {
         User user = new User();
-        user.setId(1);
+        user.setUserId(1L);
         user.setName("Bob");
         user.setEmail("s123456@student.dtu.dk");
         user.setPassword("password123");
 
-        assertEquals(1, user.getId());
+        assertEquals(1, user.getUserId());
         assertEquals("Bob", user.getName());
         assertEquals("s123456@student.dtu.dk", user.getEmail());
         assertEquals("password123", user.getPassword());
