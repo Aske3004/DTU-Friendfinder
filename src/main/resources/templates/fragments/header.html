@@ -25,6 +25,19 @@
             gap: 15px;
         }
 
+        .header-brand-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.2s ease;
+        }
+
+        .header-brand-link:hover {
+            opacity: 0.8;
+        }
+
         .logo-container {
             display: flex;
             align-items: center;
@@ -141,8 +154,6 @@
             margin: 4px 0;
         }
 
-
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .user-info {
@@ -162,12 +173,14 @@
     <div class="header-container">
         <!-- Left: DTU Logo and App Name -->
         <div class="header-brand">
-            <div class="logo-container">
-                <img th:src="@{/images/dtu_logo.png}" alt="DTU Logo" class="header-logo">
-            </div>
-            <div class="app-name">
-                <h1>FriendFinder</h1>
-            </div>
+            <a th:href="@{/}" class="header-brand-link">
+                <div class="logo-container">
+                    <img th:src="@{/images/dtu_logo.png}" alt="DTU Logo" class="header-logo">
+                </div>
+                <div class="app-name">
+                    <h1>FriendFinder</h1>
+                </div>
+            </a>
         </div>
 
         <!-- Right: User Profile Section -->
@@ -177,7 +190,7 @@
                 <div class="user-info">
                     <span class="user-name" th:text="${session.auth.user().getName()}">User Name</span>
                 </div>
-                <div class="dropdown-arrow">▼</div>
+                <div class="dropdown-arrow"></div>
             </div>
 
             <!-- Dropdown Menu -->
