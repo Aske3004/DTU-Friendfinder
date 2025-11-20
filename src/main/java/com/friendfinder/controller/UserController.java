@@ -42,6 +42,7 @@ public class UserController {
             AuthenticatorService.Auth auth = authenticatorService.authenticate(user.getEmail(), rawPassword);
             session.setAttribute("auth", auth);
             session.setAttribute("name", user.getName());
+            session.setAttribute("user", user);
             session.setAttribute("email", user.getEmail());
             return "redirect:/";
         } catch (NullPointerException e) {
@@ -95,7 +96,11 @@ public class UserController {
             session.setAttribute("name", name);
         }  catch (NullPointerException e) {
             System.err.println(e.getMessage());
+        } catch (InvalidNameException e) {
+            System.err.println(e.getMessage());
+            nameMessage = e.getMessage();
         }
+        model.addAttribute("name", new Field("Text", "name", "Name", user.getName(), nameMessage));
 
         return "redirect:/users/user-profile";
     }
@@ -103,6 +108,7 @@ public class UserController {
     @PostMapping("/update-email")
     public String updateEmail(@ModelAttribute("user") User user, HttpSession session, Model model) {
         String nameMessage = "";
+        String emailMessage = "";
         try {
             var user1 = (User) session.getAttribute("user");
             String newemail = user.getEmail();
@@ -110,7 +116,11 @@ public class UserController {
             session.setAttribute("email", newemail);
         }  catch (NullPointerException e) {
             System.err.println(e.getMessage());
+        } catch (InvalidEmailException e) {
+            System.err.println(e.getMessage());
+            emailMessage = e.getMessage();
         }
+        model.addAttribute("email", new Field("Email", "email", "Email", user.getEmail(), emailMessage));
 
         return "redirect:/users/user-profile";
     }
@@ -120,6 +130,7 @@ public class UserController {
         try {
             User user1 = (User) session.getAttribute("user");
             userService.deleteUser(user1.getEmail());
+            session.invalidate();
             return "redirect:/login";
         }   catch (NullPointerException e) {
             System.err.println(e.getMessage());
