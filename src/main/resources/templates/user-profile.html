@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body class="container">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<h1 th:text="${session.name} + '\'s profile'"></h1>
+<form th:action="@{/users/update-name}" th:object="${session.auth.user()}" method="post">
+    <label th:replace="~{fragments/field :: field(${name})}"></label>
+    <!--<label th:replace="~{fragments/field :: field(${password})}"></label>-->
+    <button type="submit">Update</button>
+</form>
+<form th:action="@{/users/update-email}" th:object="${session.auth.user()}" method="post">
+    <label th:replace="~{fragments/field :: field(${email})}"></label>
+    <button type="submit">Update</button>
+</form>
+
+<form th:action="@{/users/delete-user}" th:object="${session.auth.user()}" method="post">
+    <button type="submit">Delete</button>
+</form>
+
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
