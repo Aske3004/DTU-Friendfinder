@@ -17,10 +17,26 @@
     </thead>
     <tbody>
     <tr th:each="user : ${users}">
-        <td th:text="${user.name}">Name</td>
-        <td th:text="${user.email}">Email</td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.email}"></td>
+        <td>
+            <span th:if="${user.email == currentUser.email}">You</span>
+
+            <span class="request-sent"
+                  th:if="${#bools.isTrue(friendService.hasPendingRequest(currentUser, user))}">
+        Request sent
+      </span>
+
+            <a th:if="${user.email != currentUser.email
+                  and !friendService.hasPendingRequest(currentUser, user)}"
+               th:href="@{'/friends/add/' + ${user.email}}"
+               role="button"
+               class="secondary">➕ Send request</a>
+        </td>
     </tr>
     </tbody>
+
+
 </table>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
