@@ -1,82 +1,179 @@
-<header>
-  <style>
-     #nav-toast {
-       position: absolute;
-       right: 1rem;
-       top: 0.5rem;
-       background: #fee;
-       color: #900;
-       border: 1px solid #f5c2c7;
-       border-radius: 6px;
-       padding: 0.5rem 0.75rem;
-       display: flex;
-       align-items: center;
-       gap: 0.5rem;
-       box-shadow: 0 4px 10px rgba(0,0,0,.08);
-       z-index: 1000;
-       max-width: clamp(200px, 50vw, 480px);
-       font-size: 0.9rem;
-     }
-     #nav-toast .toast-close {
-       background: transparent;
-       border: 0;
-       font-size: 1.1rem;
-       line-height: 1;
-       cursor: pointer;
-       color: inherit;
-       padding: 0 0 0 0.25rem;
-    }
-  </style>
+<header class="main-header">
+    <style>
+        /* Redesigned Header Styles */
+        .main-header {
+            background: transparent;
+            padding: 20px;
+        }
 
-  <nav class="container">
-    <ul>
-      <li><a href="/display" class="secondary">About</a></li>
-      <li th:if="${session.auth != null}">
-        <a href="/users/all" class="secondary">Users</a>
-      </li>
-    </ul>
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 12px 24px;
+        }
 
+        /* Brand Section */
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-    <ul>
-      <li><strong><a href="/" class="secondary">Home</a></strong></li>
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
 
-      <li th:if="${session.auth != null}">
-        <a href="/friends/requests" class="secondary" style="font-weight:bold;">Requests</a>
-      </li>
+        .header-logo {
+            height: 45px;
+            width: auto;
+        }
 
-      <li th:if="${session.auth != null}">
-        <a href="/friends/list" class="secondary">Friends</a>
-      </li>
-    </ul>
-    <ul>
-      <li style="display: flex; align-items: center; gap: 0.5rem;">
-        <a th:if="${session.auth != null}" th:href="'/users/user-profile'" th:text="${session.name}" style="display: flex; align-items: center; font-size: 0.9rem"></a>
-        <a th:href="'/users/user-profile'" class="secondary" style="display: flex; align-items: center;">
-          <svg width="1rem" height="1rem" viewBox="0 0 16 16"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z"
-                  fill="#ABABAB"></path>
-            <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z"
-                  fill="#ABABAB"></path>
-          </svg>
-        </a>
-      </li>
-    </ul>
-    <div th:if="${error != null}" id="nav-toast" class="toast error" role="alert" aria-live="polite" aria-atomic="true">
-      <span th:text="${error}">An error occurred.</span>
-      <button type="button" class="toast-close" aria-label="Close" onclick="(function(btn){var t=btn.closest('#nav-toast'); if(t){t.remove();}})(this)">×</button>
+        .app-name h1 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #a50034; /* DTU red */
+        }
+
+        /* Profile Section */
+        .header-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-menu:hover {
+            background-color: #f8f8f8;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            /* Profile picture will be set via database later */
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .dropdown-arrow {
+            color: #666;
+            transition: transform 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .user-menu:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Toast Notification */
+        #nav-toast {
+            position: absolute;
+            right: 1rem;
+            top: 5rem;
+            background: #fee;
+            color: #900;
+            border: 1px solid #f5c2c7;
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,.08);
+            z-index: 1000;
+            max-width: clamp(200px, 50vw, 480px);
+            font-size: 0.9rem;
+        }
+
+        #nav-toast .toast-close {
+            background: transparent;
+            border: 0;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            color: inherit;
+            padding: 0 0 0 0.25rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .user-info {
+                display: none;
+            }
+
+            .header-container {
+                padding: 12px 20px;
+            }
+
+            .app-name h1 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+
+    <div class="header-container">
+        <!-- Left: DTU Logo and App Name -->
+        <div class="header-brand">
+            <div class="logo-container">
+                <img th:src="@{/images/dtu_logo.png}" alt="DTU Logo" class="header-logo">
+            </div>
+            <div class="app-name">
+                <h1>FriendFinder</h1>
+            </div>
+        </div>
+
+        <!-- Right: User Profile Section -->
+        <div class="header-profile">
+            <div class="user-menu">
+                <div class="user-avatar"></div>
+                <div class="user-info">
+                    <span class="user-name" th:text="${session.auth.user().getName()}">User Name</span>
+                </div>
+                <div class="dropdown-arrow">▼</div>
+            </div>
+        </div>
     </div>
-  </nav>
 
-  <script>
-    (function(){
-      var t = document.getElementById('nav-toast');
-      if(!t) return;
-        var timer = setTimeout(function(){ if(t) t.remove(); }, 10000);
-        var hovering = false;
-        t.addEventListener('mouseenter', function(){ hovering = true; clearTimeout(timer); });
-        t.addEventListener('mouseleave', function(){ if(hovering){ timer = setTimeout(function(){ if(t) t.remove(); }, 4000); hovering = false; } });
-      }
-    )();
-  </script>
+    <!-- Toast Notification -->
+    <div th:if="${error != null}" id="nav-toast" class="toast error" role="alert" aria-live="polite" aria-atomic="true">
+        <span th:text="${error}">An error occurred.</span>
+        <button type="button" class="toast-close" aria-label="Close" onclick="(function(btn){var t=btn.closest('#nav-toast'); if(t){t.remove();}})(this)">×</button>
+    </div>
+
+    <script>
+        (function(){
+                var t = document.getElementById('nav-toast');
+                if(!t) return;
+                var timer = setTimeout(function(){ if(t) t.remove(); }, 10000);
+                var hovering = false;
+                t.addEventListener('mouseenter', function(){ hovering = true; clearTimeout(timer); });
+                t.addEventListener('mouseleave', function(){ if(hovering){ timer = setTimeout(function(){ if(t) t.remove(); }, 4000); hovering = false; } });
+            }
+        )();
+    </script>
 </header>

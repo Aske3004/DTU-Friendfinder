@@ -3,11 +3,336 @@
 
 <head th:replace="~{fragments/head ::head}"></head>
 
-<body class = "container">
+<body class="container-fluid">
 <header th:replace="~{fragments/header :: header}"></header>
 
-<h1 th:text="'Welcome, ' + ${session.name}"></h1>
+<div class="main-container">
+    <!-- Main Content Area - User Profile Display -->
+    <main class="user-display">
+        <div class="welcome-section">
+            <h1 th:text="'Welcome, ' + ${session.auth.user().getName()}"></h1>
+            <p>Discover new people around DTU</p>
+        </div>
 
-<footer th:replace="~{fragments/footer ::footer}"></footer>
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar"></div>
+                <div class="profile-info">
+                    <h2 class="profile-name">HENT BRUGERS NAVN </h2>
+                    <p class="profile-details">PROFIL DETALJER (STUDIERETNING, EVT SEMESTER.</p>
+                    <div class="profile-interests">
+                        <span class="interest-tag">BRUGER INTERESSE 1</span>
+                        <span class="interest-tag">BRUGER INTERESSE 2</span>
+                        <span class="interest-tag">BRUGER INTERESSE 3</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-bio">
+                <h3>About Me</h3>
+                <p>BRUG FUNKTION TIL AT HENTE DEN ANDEN BRUGERS ABOUT ME/BIO. BRUG FUNKTION TIL AT HENTE DEN ANDEN BRUGERS ABOUT ME/BIO. BRUG FUNKTION TIL AT HENTE DEN ANDEN BRUGERS ABOUT ME/BIO.</p>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn dislike-btn">👎 Pass</button>
+                <button class="action-btn like-btn">👍 Like</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Friends List Sidebar -->
+    <aside class="friends-sidebar">
+        <h2>Your Friends</h2>
+        <div class="friends-list">
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 1</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 2</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 3</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 4</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 5</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 5</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 5</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 5</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 5</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 5</span>
+                </div>
+            </div>
+            <div class="friend-item">
+                <div class="friend-avatar"></div>
+                <div class="friend-info">
+                    <span class="friend-name">VEN NUMMER 6</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+
+</div>
+
+<style>
+    /* Main Layout */
+    .main-container {
+        display: flex;
+        min-height: calc(100vh - 120px);
+        gap: 20px;
+        padding-top: 0px;
+        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        max-height: 550px;
+    }
+
+    /* Friends Sidebar */
+    .friends-sidebar {
+        width: 300px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .friends-sidebar h2 {
+        color: #a50034;
+        margin-top: 0;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .friends-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .friend-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .friend-item:last-child {
+        border-bottom: none;
+    }
+
+    .friend-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .friend-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .friend-name {
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* User Display Area */
+    .user-display {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .welcome-section {
+        margin-bottom: 20px;
+    }
+
+    .welcome-section h1 {
+        color: #a50034;
+        margin-bottom: 5px;
+    }
+
+    .welcome-section p {
+        color: #666;
+        font-size: 1.1em;
+    }
+
+    /* Profile Card */
+    .profile-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-header {
+        display: flex;
+        margin-bottom: 25px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 12px;
+        background-color: #e0e0e0;
+        margin-right: 25px;
+        flex-shrink: 0;
+    }
+
+    .profile-info {
+        flex: 1;
+    }
+
+    .profile-name {
+        color: #a50034;
+        margin-top: 0;
+        margin-bottom: 8px;
+    }
+
+    .profile-details {
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .profile-interests {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .interest-tag {
+        background-color: #f0f0f0;
+        color: #555;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+
+    .profile-bio {
+        margin-bottom: 30px;
+    }
+
+    .profile-bio h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .profile-bio p {
+        color: #555;
+        line-height: 1.5;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: auto;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .dislike-btn {
+        background-color: #f5f5f5;
+        color: #666;
+    }
+
+    .dislike-btn:hover {
+        background-color: #e0e0e0;
+    }
+
+    .like-btn {
+        background-color: #a50034;
+        color: white;
+    }
+
+    .like-btn:hover {
+        background-color: #8b002c;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .main-container {
+            flex-direction: column;
+        }
+
+        .friends-sidebar {
+            width: 100%;
+            max-height: 250px;
+        }
+
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            margin-right: 0;
+            margin-bottom: 15px;
+            align-self: center;
+        }
+    }
+</style>
 </body>
 </html>
