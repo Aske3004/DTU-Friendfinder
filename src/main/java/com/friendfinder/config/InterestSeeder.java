@@ -32,7 +32,7 @@ public class InterestSeeder implements CommandLineRunner {
 
     private Interest createInterest(String name) {
         Interest interest = new Interest();
-        interest.setInterestName(name);
+        interest.setName(name);
         return interest;
     }
 }

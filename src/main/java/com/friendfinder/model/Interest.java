@@ -23,20 +23,11 @@ public class Interest {
     @ManyToMany(mappedBy = "interests")
     private List<User> users;
 
-    public Long getInterestId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setInterestId(Long id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getInterestName() {
-        return name;
-    }
-
-    public void setInterestName(String name) {
-        this.name = name;
-    }
 }
 

@@ -16,6 +16,22 @@
     <label th:replace="~{fragments/field :: field(${email}, false)}"></label>
     <button type="submit">Update</button>
 </form>
+<form th:action="@{/users/update-interest}" th:object="${session.auth.user()}" method="post">
+<div class="interest-selection">
+    <h3>Select Interests</h3>
+    <div class="interest-list">
+        <th:block th:each="interest : ${interests}">
+            <button type="button"
+                    class="interest-btn"
+                    th:text="${interest.name}"
+                    th:attr="data-id=${interest.id}"
+                    onclick="toggleInterest(this)">
+            </button>
+        </th:block>
+    </div>
+    <input type="hidden" name="selectedInterests" id="selectedInterests">
+</div>
+</form>
 
 <form th:action="@{/users/delete-user}" th:object="${session.auth.user()}" method="post">
     <button type="submit">Delete</button>

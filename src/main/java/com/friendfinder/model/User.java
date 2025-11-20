@@ -83,6 +83,10 @@ public class User {
         this.friends = friends;
     }
 
+    public List<Interest> getInterests() {return interests;}
+
+    public void setInterests(List<Interest> interests) {this.interests = interests;}
+
     public String getPassword() {
         return password;
     }
