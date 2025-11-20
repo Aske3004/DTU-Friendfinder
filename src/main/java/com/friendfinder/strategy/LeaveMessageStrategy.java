@@ -8,8 +8,8 @@ public class LeaveMessageStrategy implements MessageTypeStrategy {
 
     @Override
     public void processMessage(Message message) {
-        message.setContent(message.getSender().getUsername() + " left the chat");
-        System.out.println("User left: " + message.getSender().getUsername());
+        message.setContent(message.getSender().getName() + " left the chat");
+        System.out.println("User left: " + message.getSender().getName());
     }
 
     @Override

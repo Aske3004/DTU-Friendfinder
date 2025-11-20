@@ -1,5 +1,6 @@
 package com.friendfinder.services;
 
+import com.friendfinder.exceptions.InvalidMessageContentException;
 import com.friendfinder.model.Message;
 import com.friendfinder.strategy.MessageTypeStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class MessageProcessor {
     // procces a message using the appropriate strategy
     public void processMessage(Message message) {
         if (message == null) {
-            throw new IllegalArgumentException("Message cannot be null");
+            throw new InvalidMessageContentException("Message cannot be null");
         }
 
         String messageType = message.getMessageType();
 
         if (messageType == null || messageType.trim().isEmpty()) {
-            throw new IllegalArgumentException("Message type cannot be null or empty");
+            throw new InvalidMessageContentException("Message type cannot be null or empty");
         }
 
         MessageTypeStrategy strategy = strategies.get(messageType);
@@ -71,7 +72,7 @@ public class MessageProcessor {
     // process a message with fallback(alternative)
     public void processMessageWithFallback(Message message, MessageTypeStrategy fallbackStrategy) {
         if (message == null) {
-            throw new IllegalArgumentException("Message cannot be null");
+            throw new InvalidMessageContentException("Message cannot be null");
         }
 
         String messageType = message.getMessageType();
