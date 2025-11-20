@@ -8,6 +8,15 @@
 
 <h1 th:text="'Welcome, ' + ${session.auth.user().getName()}"></h1>
 
+
+
+<h4 style="margin-top: 2cm">Send Friend Request</h4>
+
+<form th:action="@{/users/send-friend-request}" method="post">
+    <label th:replace="~{fragments/field :: field(${email})}"></label>
+    <button type="submit">Send</button>
+</form>
+
 <footer th:replace="~{fragments/footer ::footer}"></footer>
 </body>
 </html>

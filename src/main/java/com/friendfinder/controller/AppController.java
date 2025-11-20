@@ -25,6 +25,8 @@ public class AppController {
             return "redirect:/login";
         }
 
+        model.addAttribute("email", new Field("Email", "email", "Email", null, null));
+
         return "index";
     }
 

@@ -1,0 +1,26 @@
+<!-- fragments/table.html -->
+<div th:fragment="itemTable(table)">
+    <div style="display: flex; justify-content: space-between;">
+        <h1 style="padding: 0.5rem"><span th:text="${table.heading}"></span></h1>
+        <a th:if="${table.button != null}" th:href="${table.button.URL}"><button style="max-height: 3rem;" th:text="${table.button.text}"></button></a>
+    </div>
+    <div style=";max-height: 500px; overflow-y: auto;">
+        <table id="table">
+            <thead data-theme="light">
+            <tr>
+                <th th:each="colName : ${table.columnNames}" th:text="${colName}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${table.rows}" >
+                <td th:each="cell : ${row}"
+                    th:text="${cell}"
+                    th:attrappend="onclick=${table.editURL} != null ? 'window.location.href=\'' + ${table.editURL} + '?id=' + ${row[0]} + '\'' : null"
+                    onmouseover="this.parentElement.style='--pico-background-color: #181C25; cursor: default;'"
+                    onmouseout="this.parentElement.style='--pico-background-color: transparent;'"
+                    ></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

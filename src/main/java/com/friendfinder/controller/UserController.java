@@ -3,8 +3,10 @@ package com.friendfinder.controller;
 import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidNameException;
 import com.friendfinder.exceptions.InvalidPasswordException;
+import com.friendfinder.model.FriendRequest;
 import com.friendfinder.model.User;
 import com.friendfinder.services.AuthenticatorService;
+import com.friendfinder.services.FriendRequestService;
 import com.friendfinder.services.UserService;
 import com.friendfinder.utils.Field;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +20,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FriendRequestService friendRequestService;
+
     @Autowired
     private AuthenticatorService authenticatorService;
 
@@ -62,6 +68,7 @@ public class UserController {
 
         return "create-user";
     }
+
     @GetMapping("/all")
     public String listUsers(Model model, HttpSession session) {
         var auth = session.getAttribute("auth");
@@ -71,5 +78,28 @@ public class UserController {
 
         model.addAttribute("users", userService.findAllUsers());
         return "users";
+    }
+
+    @PostMapping("/send-friend-request")
+    public String sendFriendRequest(@RequestParam("email") String email, HttpSession session) {
+        var auth = session.getAttribute("auth");
+        if (auth == null) {
+            return "redirect:/login";
+        }
+        AuthenticatorService.Auth authObj = (AuthenticatorService.Auth) auth;
+
+        // TODO Validation & Error Handling
+        //  Also don't create objects in the controller, but in the service layer
+        //  How do we want to handle sending the request? click the user from the list/swiping/etc.
+        //  Right now it's just by email on the home page
+
+        User receiver = userService.findUser(email);
+
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setSender(authObj.user());
+        friendRequest.setReceiver(receiver);
+
+        friendRequestService.sendFriendRequest(friendRequest);
+        return "redirect:/users/all";
     }
 }
