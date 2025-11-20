@@ -30,10 +30,13 @@ public class User {
     private String email;
 
     private String password;
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "friends_relation",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
     private List<User> friends;
-
     @ManyToMany
     @JoinTable(
             name = "user_interest",
@@ -153,6 +156,15 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return userId != null && userId.equals(user.getUserId());
+    }
+    public void addFriend(User friend) {
+        if (!friends.contains(friend)) {
+            friends.add(friend);
+        }
+    }
+
+    public void removeFriend(User friend) {
+        friends.remove(friend);
     }
 
 }

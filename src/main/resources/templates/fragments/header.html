@@ -39,6 +39,14 @@
 
     <ul>
       <li><strong><a href="/" class="secondary">Home</a></strong></li>
+
+      <li th:if="${session.auth != null}">
+        <a href="/friends/requests" class="secondary" style="font-weight:bold;">Requests</a>
+      </li>
+
+      <li th:if="${session.auth != null}">
+        <a href="/friends/list" class="secondary">Friends</a>
+      </li>
     </ul>
     <ul>
       <li style="display: flex; align-items: center; gap: 0.5rem;">

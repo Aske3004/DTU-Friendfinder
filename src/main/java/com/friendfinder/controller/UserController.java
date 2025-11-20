@@ -5,6 +5,7 @@ import com.friendfinder.exceptions.InvalidNameException;
 import com.friendfinder.exceptions.InvalidPasswordException;
 import com.friendfinder.model.User;
 import com.friendfinder.services.AuthenticatorService;
+import com.friendfinder.services.FriendService;
 import com.friendfinder.services.UserService;
 import com.friendfinder.utils.Field;
 import jakarta.servlet.http.HttpSession;
@@ -20,6 +21,9 @@ public class UserController {
     private UserService userService;
     @Autowired
     private AuthenticatorService authenticatorService;
+    @Autowired
+    private FriendService friendService;
+
 
     @GetMapping("/create-user")
     public String createUser(Model model) {
@@ -67,14 +71,34 @@ public class UserController {
     }
     @GetMapping("/all")
     public String listUsers(Model model, HttpSession session) {
-        var auth = session.getAttribute("auth");
+        var auth = (AuthenticatorService.Auth) session.getAttribute("auth");
         if (auth == null) {
             return "redirect:/login";
         }
 
+        User currentUser = auth.user();
         model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("currentUser", currentUser);
+
+        // Liste af e-mails som brugeren allerede har sendt requests til
+        var sentRequests = friendService.getPendingRequests(currentUser)
+                .stream()
+                .map(req -> req.getReceiver().getEmail())
+                .toList();
+        model.addAttribute("sentRequestEmails", sentRequests);
+
+        // Liste af e-mails som allerede er venner
+        var friendEmails = friendService.getFriends(currentUser)
+                .stream()
+                .map(User::getEmail)
+                .toList();
+        model.addAttribute("friendEmails", friendEmails);
+
         return "users";
     }
+
+
+
 
     @GetMapping("/user-profile")
     public String userprofile(Model model, HttpSession session) {
