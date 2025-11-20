@@ -34,6 +34,15 @@ public class User {
     @ManyToMany
     private List<User> friends;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_interest",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "interest_id")
+    )
+    private List<Interest> interests;
+
+
     @ManyToMany(mappedBy = "participants")
     @JsonIgnore
     private Set<Chat> chats = new HashSet<>();
