@@ -3,7 +3,7 @@
 
 <head th:replace="~{fragments/head :: head}"></head>
 
-<body class="container">
+<body class="container-fluid">
 <header th:replace="~{fragments/header :: header}"></header>
 
 <h1 th:text="${session.name} + '\'s profile'"></h1>
@@ -20,8 +20,5 @@
 <form th:action="@{/users/delete-user}" th:object="${session.auth.user()}" method="post">
     <button type="submit">Delete</button>
 </form>
-
-
-<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

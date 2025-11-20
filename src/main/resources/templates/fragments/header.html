@@ -4,6 +4,7 @@
         .main-header {
             background: transparent;
             padding: 20px;
+            position: relative;
         }
 
         .header-container {
@@ -45,6 +46,7 @@
         .header-profile {
             display: flex;
             align-items: center;
+            position: relative;
         }
 
         .user-menu {
@@ -91,34 +93,55 @@
             transform: rotate(180deg);
         }
 
-        /* Toast Notification */
-        #nav-toast {
+        /* Dropdown Menu */
+        .dropdown-menu {
             position: absolute;
-            right: 1rem;
-            top: 5rem;
-            background: #fee;
-            color: #900;
-            border: 1px solid #f5c2c7;
-            border-radius: 6px;
-            padding: 0.5rem 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,.08);
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 8px 0;
+            min-width: 180px;
             z-index: 1000;
-            max-width: clamp(200px, 50vw, 480px);
-            font-size: 0.9rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
         }
 
-        #nav-toast .toast-close {
-            background: transparent;
-            border: 0;
-            font-size: 1.1rem;
-            line-height: 1;
-            cursor: pointer;
-            color: inherit;
-            padding: 0 0 0 0.25rem;
+        .header-profile:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
+
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+            color: #a50034;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 4px 0;
+        }
+
+
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -156,13 +179,14 @@
                 </div>
                 <div class="dropdown-arrow">▼</div>
             </div>
-        </div>
-    </div>
 
-    <!-- Toast Notification -->
-    <div th:if="${error != null}" id="nav-toast" class="toast error" role="alert" aria-live="polite" aria-atomic="true">
-        <span th:text="${error}">An error occurred.</span>
-        <button type="button" class="toast-close" aria-label="Close" onclick="(function(btn){var t=btn.closest('#nav-toast'); if(t){t.remove();}})(this)">×</button>
+            <!-- Dropdown Menu -->
+            <div class="dropdown-menu">
+                <a th:href="@{/users/user-profile}" class="dropdown-item">My Profile</a>
+                <div class="dropdown-divider"></div>
+                <a th:href="@{/logout}" class="dropdown-item">Logout</a>
+            </div>
+        </div>
     </div>
 
     <script>
