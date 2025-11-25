@@ -71,10 +71,11 @@ public class UserController {
             System.err.println(e.getMessage());
             passwordMessage = e.getMessage();
         }
-
+        model.addAttribute("user", user);
         model.addAttribute("name", new Field("Text", "name", "Name", user.getName(), nameMessage));
         model.addAttribute("email", new Field("Email", "email", "Email", user.getEmail(), emailMessage));
         model.addAttribute("password", new Field("Password", "password", "Password", null, passwordMessage));
+        model.addAttribute("interests", interestRepository.findAll());
 
         return "create-user";
     }

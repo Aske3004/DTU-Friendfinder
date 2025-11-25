@@ -17,17 +17,21 @@ public class InterestSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (interestRepository.count() == 0) {
-            interestRepository.saveAll(List.of(
-                    createInterest("Sports"),
-                    createInterest("Music"),
-                    createInterest("Travel"),
-                    createInterest("Gaming")
-            ));
-            System.out.println("Seeded interests into DB");
-        } else {
-            System.out.println("Interests already exist, skipping seeding");
+        List<String> desiredInterests = List.of(
+                "Sports", "Music", "Travel", "Gaming", "Boardgames",
+                "Coding", "Fitness", "Reading"
+        );
+
+        for (String name : desiredInterests) {
+            if (!interestRepository.existsByName(name)) {
+                Interest interest = new Interest();
+                interest.setName(name);
+                interestRepository.save(interest);
+            }
         }
+
+        System.out.println("Ensured all default interests are present");
+
     }
 
     private Interest createInterest(String name) {

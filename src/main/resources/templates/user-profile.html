@@ -18,7 +18,7 @@
 </form>
 <form th:action="@{/users/update-interest}" th:object="${session.auth.user()}" method="post">
 <div class="interest-selection">
-    <h3>Select Interests</h3>
+    <h3>Interests</h3>
     <div class="interest-list">
         <th:block th:each="interest : ${interests}">
             <button type="button"

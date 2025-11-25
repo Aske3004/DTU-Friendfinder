@@ -41,6 +41,24 @@
         </div>
     </div>
 </main>
+<script>
+    const selected = new Set();
+
+    function toggleInterest(button) {
+        const id = button.getAttribute("data-id");
+
+        if (selected.has(id)) {
+            selected.delete(id);
+            button.classList.remove("selected");
+        } else {
+            selected.add(id);
+            button.classList.add("selected");
+        }
+
+        document.getElementById("selectedInterests").value = Array.from(selected).join(",");
+    }
+</script>
+
 
 </body>
 </html>

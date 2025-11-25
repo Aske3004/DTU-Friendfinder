@@ -12,5 +12,7 @@ import java.util.List;
 public interface InterestRepository extends PagingAndSortingRepository<Interest, Long>, CrudRepository<Interest, Long> {
     Interest findByName(@Param("name") String name);
     List<Interest> findAllById(@Param("id") Long id);
+
+    boolean existsByName(String name);
 }
 
