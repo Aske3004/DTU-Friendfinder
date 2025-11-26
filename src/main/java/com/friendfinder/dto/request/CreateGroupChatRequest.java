@@ -16,7 +16,7 @@ public class CreateGroupChatRequest {
     @NotNull(message = "Creator ID is required")
     private Long creatorID;
 
-    @NotEmpty(message = "At least one participant ID is required")
+    @NotEmpty(message = "At least one participant is required")
     private Set<Long> participantIDs = new HashSet<>();
 
     public CreateGroupChatRequest() {
