@@ -295,31 +295,4 @@ public class ChatController {
     }
 
     //  "bruger har læst besked"
-
-    public static class ReadRequest {
-        private Long messageId;
-        private Long userId;
-
-        public Long getMessageId() {
-            return messageId;
-        }
-        public void setMessageId(Long messageId) {
-            this.messageId = messageId;
-        }
-        public Long getUserId() {
-            return userId;
-        }
-        public void setUserId(Long userId) {
-            this.userId = userId;
-        }
-    }
-
-    @MessageMapping("/chat.read")
-    public void markMessageAsRead(ReadRequest request) {
-        if (request.getMessageId() == null || request.getUserId() == null) {
-            throw new IllegalArgumentException("messageId and userId must be provided");
-        }
-        messageService.markMessageAsRead(request.getMessageId(), request.getUserId());
-
-    }
 }
