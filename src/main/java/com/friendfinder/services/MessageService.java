@@ -2,6 +2,7 @@ package com.friendfinder.services;
 
 import com.friendfinder.dto.MessageDTO;
 import com.friendfinder.dto.MessageReadReceiptDTO;
+import com.friendfinder.exceptions.*;
 import com.friendfinder.model.Chat;
 import com.friendfinder.model.Message;
 import com.friendfinder.model.MessageReadReceipt;
@@ -10,7 +11,6 @@ import com.friendfinder.repository.ChatRepository;
 import com.friendfinder.repository.MessageReadReceiptRepository;
 import com.friendfinder.repository.MessageRepository;
 import com.friendfinder.repository.UserRepository;
-import com.friendfinder.strategy.MessageTypeStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,14 +44,14 @@ public class MessageService {
     // verify access #Helper
     private void verifyUserAccessToMessage(Long chatId, Long userId) {
         if(!chatService.isUserInChat(chatId, userId)) {
-            throw new RuntimeException("User with id " + userId + " is not part of chat " + chatId);
+            throw new UserNotInChatException("User with id " + userId + " is not part of chat " + chatId);
         }
     }
 
     // check if user is the creator of the message #Helper
     public boolean isUserMessageCreator(Long messageId, Long userId) {
         Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new RuntimeException("Message with id " + messageId + "not found"));
+                .orElseThrow(() -> new MessageNotFoundException("Message with id " + messageId + "not found"));
 
         return message.getSender().getUserId().equals(userId);
     }
@@ -59,7 +59,7 @@ public class MessageService {
     // get a message with auth #Helper
     private Message getMessageWithAuth(Long messageId, Long userId) {
         Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new RuntimeException("Message with id " + messageId + "not found"));
+                .orElseThrow(() -> new MessageNotFoundException("Message with id " + messageId + "not found"));
 
         verifyUserAccessToMessage(message.getChat().getChatId(), userId);
 
@@ -69,9 +69,9 @@ public class MessageService {
 
     public MessageDTO saveMessage(MessageDTO messageDTO, Long authenticatedUserId) {
         Chat chat = chatRepository.findById(messageDTO.getChatId())
-                .orElseThrow(() -> new RuntimeException("Chat with id " + messageDTO.getChatId() + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat with id " + messageDTO.getChatId() + "not found"));
         User sender = userRepository.findById(authenticatedUserId)
-                .orElseThrow(() -> new RuntimeException("User with id " + authenticatedUserId + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with id " + authenticatedUserId + "not found"));
 
         // check if sender is part of chat
         verifyUserAccessToMessage(messageDTO.getChatId(), authenticatedUserId);
@@ -90,7 +90,7 @@ public class MessageService {
     // get full chat
     public List<MessageDTO> getChatMessages(Long chatId, Long requestingUserId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat with id " + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat with id " + chatId + "not found"));
 
         verifyUserAccessToMessage(chatId, requestingUserId);
 
@@ -110,11 +110,11 @@ public class MessageService {
     // edit message
     public MessageDTO editMessage(Long messageId, Long userId, String newContent) {
         if (!isUserMessageCreator(messageId, userId)) {
-            throw new RuntimeException("User with id " + userId + " is not the sender of message " + messageId);
+            throw new UserNotFoundException("User with id " + userId + " is not the sender of message " + messageId);
         }
 
         Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new RuntimeException("Message with id " + messageId + "not found"));
+                .orElseThrow(() -> new MessageNotFoundException("Message with id " + messageId + "not found"));
 
         message.setContent(newContent);
         message.markAsEdited();
@@ -126,20 +126,20 @@ public class MessageService {
     // delete message
     public void deleteMessage(Long messageId, Long requestingUserId) {
         if (!isUserMessageCreator(messageId, requestingUserId)) {
-            throw new RuntimeException("User with id " + requestingUserId + " is not the sender of message " + messageId);
+            throw new UnauthorizedMessageAccessException("User with id " + requestingUserId + " is not the sender of message " + messageId);
         }
 
         Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new RuntimeException("Message with id " + messageId + "not found"));
+                .orElseThrow(() -> new MessageNotFoundException("Message with id " + messageId + "not found"));
 
         messageRepository.delete(message);
     }
 
     // mark as read by a specific user
-    public void markMessageAsread(Long messageId, Long userId) {
+    public void markMessageAsRead(Long messageId, Long userId) {
         Message message = getMessageWithAuth(messageId, userId);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User with id " + userId + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with id " + userId + "not found"));
 
         // sender cant mark as read
         if (isUserMessageCreator(messageId, userId)) {
@@ -171,9 +171,9 @@ public class MessageService {
     // get unread messages
     public List<MessageDTO> getUnreadMessages(Long chatId, Long userId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat with id " + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat with id " + chatId + "not found"));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User with id " + userId + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with id " + userId + "not found"));
 
         verifyUserAccessToMessage(chatId, userId);
 
@@ -187,9 +187,9 @@ public class MessageService {
     // count unread messages
     public int getUnreadMessageCount(Long chatId, Long userId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat with id " + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat with id " + chatId + "not found"));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User with id " + userId + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with id " + userId + "not found"));
 
         verifyUserAccessToMessage(chatId, userId);
 

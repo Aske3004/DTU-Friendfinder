@@ -2,6 +2,10 @@ package com.friendfinder.services;
 
 import com.friendfinder.dto.ChatDTO;
 import com.friendfinder.dto.MessageDTO;
+import com.friendfinder.exceptions.ChatNotFoundException;
+import com.friendfinder.exceptions.DuplicateParticipantException;
+import com.friendfinder.exceptions.UserNotFoundException;
+import com.friendfinder.exceptions.UserNotInChatException;
 import com.friendfinder.factory.ChatFactory;
 import com.friendfinder.model.Chat;
 import com.friendfinder.model.Message;
@@ -38,7 +42,7 @@ public class ChatService {
     // Newest message in id specific chat
     public ChatDTO getChatById(Long chatId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat" + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat" + chatId + "not found"));
 
         Message lastMessage = messageRepository.findTopByChatOrderByTimestampDesc(chat);
         MessageDTO lastMessageDTO = lastMessage != null ? new MessageDTO(lastMessage) : null;
@@ -62,9 +66,9 @@ public class ChatService {
     // create new chat
     public ChatDTO createDirectChat(Long user1Id, Long user2Id) {
         User user1 = userRepository.findById(user1Id)
-                .orElseThrow(() -> new RuntimeException("User" + user1Id + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User" + user1Id + "not found"));
         User user2 = userRepository.findById(user2Id)
-                .orElseThrow(() -> new RuntimeException("User" + user2Id + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User" + user2Id + "not found"));
 
         // Check if dm already exists
         List<Chat> user1Chats = chatRepository.findByParticipantsUserId(user1Id);
@@ -83,11 +87,11 @@ public class ChatService {
     // create group chat
     public ChatDTO createGroupChat(String chatName, Long creatorId, Set<Long> participantIds) {
         User creator = userRepository.findById(creatorId)
-                .orElseThrow(() -> new RuntimeException("Creator" + creatorId + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("Creator" + creatorId + "not found"));
 
         Set<User> participants = participantIds.stream()
                 .map(id -> userRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("User" + id + "not found")))
+                        .orElseThrow(() -> new UserNotFoundException("User" + id + "not found")))
                 .collect(Collectors.toSet());
 
         Chat chat = chatFactory.createGroupChat(chatName, creator, participants);
@@ -99,13 +103,13 @@ public class ChatService {
     // add person to chat
     public void addParticipantToChat(Long chatId, Long userId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat" + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat" + chatId + "not found"));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User" + userId + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User" + userId + "not found"));
 
         // check if user is part of gc
         if (isUserInChat(chatId, userId)) {
-            throw new RuntimeException("User" + userId + "is already in group chat");
+            throw new DuplicateParticipantException("User" + userId + "is already in group chat");
         }
 
         chat.getParticipants().add(user);
@@ -115,13 +119,13 @@ public class ChatService {
     // remove person from chat
     public void removeParticipantFromChat(Long chatId, Long userId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat" + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat" + chatId + "not found"));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User" + userId + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User" + userId + "not found"));
 
         // check if user is part of gc
         if (!isUserInChat(chatId, userId)) {
-            throw new RuntimeException("User" + userId + "is not in group chat");
+            throw new UserNotInChatException("User" + userId + "is not in group chat");
         }
 
         chat.getParticipants().remove(user);
@@ -131,7 +135,7 @@ public class ChatService {
     // delete a chat
     public void deleteChat(Long chatId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat" + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat" + chatId + "not found"));
 
         chatRepository.delete(chat);
     }
@@ -141,7 +145,7 @@ public class ChatService {
             return false;
         }
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("Chat" + chatId + "not found"));
+                .orElseThrow(() -> new ChatNotFoundException("Chat" + chatId + "not found"));
 
         return chat.getParticipants().stream()
                 .anyMatch(user -> user.getUserId().equals(userId));

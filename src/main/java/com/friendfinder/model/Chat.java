@@ -43,6 +43,7 @@ public class Chat {
     // main constructor
     public Chat(String chatName, String chatType) {
         this.chatName = chatName;
+        this.chatType = chatType;
         this.createdAt = LocalDateTime.now();
         this.participants = new HashSet<>();
     }
