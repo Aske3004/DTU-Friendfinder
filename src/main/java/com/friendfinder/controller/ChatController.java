@@ -168,7 +168,7 @@ public class ChatController {
         }
     }
 
-    @PutMapping("/mesages/{messageId}")
+    @PutMapping("/messages/{messageId}")
     public ResponseEntity<MessageDTO> editMessage(@PathVariable Long messageId,
                                                   @RequestParam("userId") Long userId,
                                                   @Valid @RequestBody EditMessageRequest request) {
