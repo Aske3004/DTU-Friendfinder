@@ -66,4 +66,20 @@ public class FriendController {
         model.addAttribute("friends", friendService.getFriends(currentUser));
         return "friends-list";
     }
+
+    @PostMapping("/remove/{email}")
+    public String removeFriend(@PathVariable String email, HttpSession session) {
+        var auth = (AuthenticatorService.Auth) session.getAttribute("auth");
+        if (auth == null) return "redirect:/login";
+
+        User currentUser = auth.user();
+        User friend = userRepo.findByEmail(email.toLowerCase());
+
+        if (friend != null) {
+            friendService.removeFriend(currentUser, friend);
+        }
+
+        return "redirect:/friends/list";
+    }
+
 }

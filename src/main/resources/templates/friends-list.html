@@ -14,6 +14,12 @@
     <tr th:each="friend : ${friends}">
         <td th:text="${friend.name}"></td>
         <td th:text="${friend.email}"></td>
+        <td style="text-align: center;">
+            <form th:action="@{'/friends/remove/' + ${friend.email}}" method="post"
+                  onsubmit="return confirm('Are you sure you want to remove this friend?');">
+                <button type="submit" role="button" class="secondary">❌ Remove</button>
+            </form>
+        </td>
     </tr>
 
     <tr th:if="${#lists.isEmpty(friends)}">

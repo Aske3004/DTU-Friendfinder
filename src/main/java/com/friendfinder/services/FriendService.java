@@ -67,4 +67,16 @@ public class FriendService {
         return fullUser1.getFriends().contains(user2);
     }
 
+    @Transactional
+    public void removeFriend(User user, User friend) {
+        User managedUser = userRepo.findById(user.getUserId()).orElse(null);
+        User managedFriend = userRepo.findById(friend.getUserId()).orElse(null);
+        if (managedUser == null || managedFriend == null) return;
+        managedUser.getFriends().remove(managedFriend);
+        managedFriend.getFriends().remove(managedUser);
+
+        userRepo.save(managedUser);
+        userRepo.save(managedFriend);
+    }
+
 }
