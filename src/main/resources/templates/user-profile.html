@@ -12,10 +12,6 @@
     <!--<label th:replace="~{fragments/field :: field(${password})}"></label>-->
     <button type="submit">Update</button>
 </form>
-<form th:action="@{/users/update-email}" th:object="${session.auth.user()}" method="post">
-    <label th:replace="~{fragments/field :: field(${email}, false)}"></label>
-    <button type="submit">Update</button>
-</form>
 <form th:action="@{/users/update-interest}" th:object="${session.auth.user()}" method="post">
 <div class="interest-selection">
     <h3>Interests</h3>

@@ -140,26 +140,6 @@ public class UserController {
         return "redirect:/users/user-profile";
     }
 
-    @PostMapping("/update-email")
-    public String updateEmail(@ModelAttribute("user") User user, HttpSession session, Model model) {
-        String nameMessage = "";
-        String emailMessage = "";
-        try {
-            var user1 = (User) session.getAttribute("user");
-            String newemail = user.getEmail();
-            userService.updateUserEmail(newemail, user1.getEmail());
-            session.setAttribute("email", newemail);
-        }  catch (NullPointerException e) {
-            System.err.println(e.getMessage());
-        } catch (InvalidEmailException e) {
-            System.err.println(e.getMessage());
-            emailMessage = e.getMessage();
-        }
-        model.addAttribute("email", new Field("Email", "email", "Email", user.getEmail(), emailMessage));
-
-        return "redirect:/users/user-profile";
-    }
-
     @PostMapping("/delete-user")
     public String deleteUser(@ModelAttribute("user") User user, HttpSession session, Model model) {
         try {

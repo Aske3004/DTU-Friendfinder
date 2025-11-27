@@ -32,16 +32,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Transactional
-    public User updateUserEmail(@Param("newemail") String newemail, @Param("email") String email) throws InvalidEmailException {
-        User user = userRepository.findByEmail(email.toLowerCase());
-        User.isEmailValid(newemail);
-        user.setEmail(newemail);
-        if (userRepository.findByEmail(newemail) != null) {
-            throw new InvalidEmailException("User already exists with email: " + user.getEmail());
-        }
-        return userRepository.save(user);
-    }
 
     @Transactional
     public void deleteUser(@Param("email") String email) {
