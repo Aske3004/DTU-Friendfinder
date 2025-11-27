@@ -24,7 +24,7 @@ public class UserService {
     @Transactional
     public User updateUserName(@Param("name") String name, @Param("email") String email) throws InvalidNameException {
         User user = userRepository.findByEmail(email.toLowerCase());
-        User.isNameValid(user.getName());
+        User.isNameValid(name);
         user.setName(name);
         return userRepository.save(user);
     }
