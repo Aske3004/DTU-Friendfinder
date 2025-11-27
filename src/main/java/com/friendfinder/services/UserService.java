@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,5 +47,30 @@ public class UserService {
         user.setInterests(interests);
         userRepository.save(user);
         return;
+    }
+
+    @Transactional
+    public List<User> findPotentialFriends(String email) {
+        User user = userRepository.findByEmail(email.toLowerCase());
+
+        List<User> allUsers = (List<User>) userRepository.findAll();
+        allUsers.remove(user);
+
+        List<User> friends = user.getFriends();
+        allUsers.removeAll(friends);
+
+        List<Interest> userInterests = user.getInterests();
+
+        return allUsers.stream()
+                .sorted((u1, u2) -> {
+                    long matches1 = u1.getInterests().stream()
+                            .filter(userInterests::contains)
+                            .count();
+                    long matches2 = u2.getInterests().stream()
+                            .filter(userInterests::contains)
+                            .count();
+                    return Long.compare(matches2, matches1); // descending order
+                })
+                .toList();
     }
 }
