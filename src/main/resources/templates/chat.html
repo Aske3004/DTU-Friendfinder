@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head">
+
+</head>
+<body>
+<header th:replace="fragments/header :: header"></header>
+
+<main id="chatRoot"
+      class="chat-page"
+      th:attr="data-user-id=${session.auth.user().userId}">
+    <div class="chat-card">
+        <!-- VENSTRE SIDE: Liste over chats -->
+        <aside class="chat-sidebar">
+            <h2 class="chat-sidebar-title">Chats</h2>
+            <ul id="chatList" class="chat-list">
+                <!-- Fyldes af JS -->
+            </ul>
+        </aside>
+
+        <!-- HØJRE SIDE: Aktiv chat -->
+        <section class="chat-main">
+            <!-- Header -->
+            <div id="chatHeader" class="chat-header">
+                <div class="chat-header-info">
+                    <h2 id="chatTitle" class="chat-title">Vælg en chat</h2>
+                    <span id="chatParticipants" class="chat-participants"></span>
+                </div>
+            </div>
+
+            <!-- Beskeder -->
+            <div id="chatMessages" class="chat-messages">
+                <!-- Fyldes af JS -->
+            </div>
+
+            <!-- Input -->
+            <form id="chatForm" class="chat-input-bar">
+                <input id="chatMessageInput"
+                       class="chat-input-field"
+                       type="text"
+                       placeholder="Write a message…"
+                       autocomplete="off">
+                <button type="submit" class="chat-send-btn">Send</button>
+            </form>
+        </section>
+    </div>
+</main>
+
+<!-- JS libraries til WebSocket -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- Din egen chat-logik -->
+<script src="/js/Chat.js"></script>
+</body>
+</html>

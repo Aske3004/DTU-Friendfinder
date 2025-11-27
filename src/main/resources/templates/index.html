@@ -49,6 +49,23 @@
                 <div class="friend-info">
                     <span class="friend-name" th:text="${friend.name}">Friend Name</span>
                 </div>
+                <!-- Chat-knap / dialog-ikon -->
+                <a th:href="@{/chat}"
+                   class="chat-button"
+                   th:title="'Open chat with ' + ${friend.name}">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="22" height="22"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="#990000"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         class="chat-icon">
+                        <path d="M3 5h18v10a2 2 0 0 1-2 2H7l-4 4V7a2 2 0 0 1 2-2z"/>
+                        <path d="M8 10h8"/>
+                    </svg>
+                </a>
             </div>
 
             <!-- Show message if no friends -->
