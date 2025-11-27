@@ -10,7 +10,7 @@
     <!-- Main Content Area - User Profile Display -->
     <main class="user-display">
         <div class="welcome-section">
-            <h1 th:text="'Welcome, ' + ${session.auth.user().getName()}"></h1>
+            <h1 th:text="'Welcome, ' + ${session.name}"></h1>
             <p>Discover new people around DTU</p>
         </div>
 
