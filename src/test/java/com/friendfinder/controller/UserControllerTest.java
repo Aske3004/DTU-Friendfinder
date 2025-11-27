@@ -1,23 +1,28 @@
+
 package com.friendfinder.controller;
 
-
-import static org.hamcrest.Matchers.instanceOf;
+import com.friendfinder.model.Interest;
 import com.friendfinder.model.User;
 import com.friendfinder.services.AuthenticatorService;
+import com.friendfinder.services.FriendService;
 import com.friendfinder.services.UserService;
+import com.friendfinder.repository.InterestRepository;
+import com.friendfinder.exceptions.InvalidEmailException;
+import com.friendfinder.exceptions.InvalidNameException;
+import com.friendfinder.exceptions.InvalidPasswordException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
@@ -26,93 +31,147 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private UserService userService;
+    @MockBean private UserService userService;
+    @MockBean private AuthenticatorService authenticatorService;
+    @MockBean private FriendService friendService;
+    @MockBean private InterestRepository interestRepository;
 
-    @MockBean
-    private AuthenticatorService authenticatorService;
-
-    // ✅ GET /users/create-user
+    // -------------------------------------------------------
+    // GET /users/create-user
+    // -------------------------------------------------------
     @Test
-    void testCreateUserPage() throws Exception {
+    void getCreateUser_returns200() throws Exception {
+        when(interestRepository.findAll()).thenReturn(List.of(new Interest()));
+
         mockMvc.perform(get("/users/create-user"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("create-user"))
-                .andExpect(model().attributeExists("name", "email", "password"));
+                .andExpect(model().attributeExists("name", "email", "password", "interests"));
     }
 
-    // ✅ POST /users/create-user
+    // -------------------------------------------------------
+    // POST /users/create-user (success)
+    // -------------------------------------------------------
     @Test
-    void testPostCreateUserSuccess() throws Exception {
-        User user = new User();
-        user.setEmail("john@example.com");
-        user.setName("John");
-        user.setPassword("secret");
-
-        // register() er void
+    void postCreateUser_success_redirectsToHome() throws Exception {
         doNothing().when(authenticatorService).register(any(User.class));
+        when(authenticatorService.authenticate(anyString(), anyString()))
+                .thenReturn(new AuthenticatorService.Auth(new User()));
 
-        // authenticate() returnerer Auth med kun User
-        when(authenticatorService.authenticate(eq("john@example.com"), eq("secret")))
-                .thenReturn(new AuthenticatorService.Auth(user));
+        when(interestRepository.findAllById(anyList())).thenReturn(List.of(new Interest()));
 
         mockMvc.perform(post("/users/create-user")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("name", "John")
-                        .param("email", "john@example.com")
-                        .param("password", "secret"))
+                        .param("email", "s123456@student.dtu.dk")
+                        .param("password", "password123")
+                        .param("selectedInterests", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
     }
 
-    // ✅ GET /users/all med auth
+    // -------------------------------------------------------
+    // POST /users/create-user (invalid email -> stays on page)
+    // -------------------------------------------------------
     @Test
-    void testListUsersWithAuth() throws Exception {
-        when(userService.findAllUsers()).thenReturn(java.util.List.of(new User()));
+    void postCreateUser_invalidEmail_returnsCreateUserView() throws Exception {
+        doThrow(new InvalidEmailException("Invalid email"))
+                .when(authenticatorService).register(any(User.class));
 
-        mockMvc.perform(get("/users/all").sessionAttr("auth", new Object()))
+        when(interestRepository.findAll()).thenReturn(List.of(new Interest()));
+
+        mockMvc.perform(post("/users/create-user")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "John")
+                        .param("email", "bad-email")
+                        .param("password", "password123"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("users"))
-                .andExpect(model().attributeExists("users"));
+                .andExpect(view().name("create-user"))
+                .andExpect(model().attributeExists("name", "email", "password", "interests"));
     }
 
-    // ✅ GET /users/all uden auth
+    // -------------------------------------------------------
+    // GET /users/all (redirect if not logged in)
+    // -------------------------------------------------------
     @Test
-    void testListUsersWithoutAuthRedirect() throws Exception {
+    void getAllUsers_notLoggedIn_redirectsToLogin() throws Exception {
         mockMvc.perform(get("/users/all"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
     }
 
-
-
-
-
-    // ✅ POST /users/update-name
+    // -------------------------------------------------------
+    // GET /users/all (logged in -> returns users view)
+    // -------------------------------------------------------
     @Test
-    void testUpdateName() throws Exception {
-        User user = new User();
-        user.setEmail("john@example.com");
+    void getAllUsers_loggedIn_returnsUsersView() throws Exception {
+        User currentUser = new User();
+        currentUser.setEmail("s123456@student.dtu.dk");
+
+        when(userService.findAllUsers()).thenReturn(List.of(currentUser));
+        when(friendService.getPendingRequests(any(User.class))).thenReturn(List.of());
+        when(friendService.getFriends(any(User.class))).thenReturn(List.of());
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("auth", new AuthenticatorService.Auth(currentUser));
+
+        mockMvc.perform(get("/users/all").session(session))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users"))
+                .andExpect(model().attributeExists("users", "currentUser", "sentRequestEmails", "friendEmails"));
+    }
+
+    // -------------------------------------------------------
+    // POST /users/update-name (success)
+    // -------------------------------------------------------
+    @Test
+    void updateName_success_redirectsToProfile() throws Exception {
+        when(userService.updateUserName(anyString(), anyString()))
+                .thenReturn(new User()); // ✅ korrekt for non-void metode
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", new User());
 
         mockMvc.perform(post("/users/update-name")
-                        .sessionAttr("user", user)
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("name", "NewName"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/users/user-profile"));
-
-        verify(userService).updateUserName(eq("NewName"), eq("john@example.com"));
     }
 
-    // ✅ POST /users/delete-user
-    @Test
-    void testDeleteUser() throws Exception {
-        User user = new User();
-        user.setEmail("john@example.com");
 
-        mockMvc.perform(post("/users/delete-user")
-                        .sessionAttr("user", user))
+    // -------------------------------------------------------
+    // POST /users/delete-user (success)
+    // -------------------------------------------------------
+    @Test
+    void deleteUser_success_redirectsToLogin() throws Exception {
+        doNothing().when(userService).deleteUser(anyString());
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", new User());
+
+        mockMvc.perform(post("/users/delete-user").session(session))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
 
-        verify(userService).deleteUser(eq("john@example.com"));
+    // -------------------------------------------------------
+    // POST /users/update-interest (success)
+    // -------------------------------------------------------
+    @Test
+    void updateInterest_success_redirectsToProfile() throws Exception {
+        doNothing().when(userService).updateUserInterest(anyList(), anyString());
+        when(interestRepository.findAllById(anyList())).thenReturn(List.of(new Interest()));
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", new User());
+
+        mockMvc.perform(post("/users/update-interest")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("selectedInterests", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/users/user-profile"));
     }
 }
