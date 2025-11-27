@@ -18,6 +18,21 @@
             <label th:replace="~{fragments/field :: field(${name},false)}"></label>
             <label th:replace="~{fragments/field :: field(${email},false)}"></label>
             <label th:replace="~{fragments/field :: field(${password},false)}"></label>
+            <div class="interest-selection">
+                <h3>Select Interests</h3>
+                <div class="interest-list">
+                    <th:block th:each="interest : ${interests}">
+                        <button type="button"
+                                class="interest-btn"
+                                th:text="${interest.name}"
+                                th:attr="data-id=${interest.id}"
+                                onclick="toggleInterest(this)">
+                        </button>
+                    </th:block>
+                </div>
+                <input type="hidden" name="selectedInterests" id="selectedInterests">
+            </div>
+
             <button type="submit" class="login-btn">Create</button>
         </form>
 
@@ -26,6 +41,24 @@
         </div>
     </div>
 </main>
+<script>
+    const selected = new Set();
+
+    function toggleInterest(button) {
+        const id = button.getAttribute("data-id");
+
+        if (selected.has(id)) {
+            selected.delete(id);
+            button.classList.remove("selected");
+        } else {
+            selected.add(id);
+            button.classList.add("selected");
+        }
+
+        document.getElementById("selectedInterests").value = Array.from(selected).join(",");
+    }
+</script>
+
 
 </body>
 </html>

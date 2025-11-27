@@ -3,7 +3,9 @@ package com.friendfinder.controller;
 import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidNameException;
 import com.friendfinder.exceptions.InvalidPasswordException;
+import com.friendfinder.model.Interest;
 import com.friendfinder.model.User;
+import com.friendfinder.repository.InterestRepository;
 import com.friendfinder.services.AuthenticatorService;
 import com.friendfinder.services.FriendService;
 import com.friendfinder.services.UserService;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -23,6 +27,8 @@ public class UserController {
     private AuthenticatorService authenticatorService;
     @Autowired
     private FriendService friendService;
+    @Autowired
+    private InterestRepository interestRepository;
 
 
     @GetMapping("/create-user")
@@ -30,18 +36,21 @@ public class UserController {
         model.addAttribute("name", new Field("Text", "name", "Name", null, null));
         model.addAttribute("email", new Field("Email", "email", "Email", null, null));
         model.addAttribute("password", new Field("Password", "password", "Password", null, null));
-
+        model.addAttribute("interests", interestRepository.findAll());
         return "create-user";
     }
 
     @PostMapping("/create-user")
-    public String postCreateUser(@ModelAttribute("user") User user, HttpSession session, Model model) {
+    public String postCreateUser(@ModelAttribute("user") User user,
+                                 @RequestParam(value = "selectedInterests", required = false) List<Long> selectedInterestIds, HttpSession session, Model model) {
         String nameMessage = "";
         String emailMessage = "";
         String passwordMessage = "";
 
         try {
             String rawPassword = user.getPassword();
+            List<Interest> interestList = (List<Interest>) interestRepository.findAllById(selectedInterestIds);
+            user.setInterests(interestList);
             authenticatorService.register(user);
             AuthenticatorService.Auth auth = authenticatorService.authenticate(user.getEmail(), rawPassword);
             session.setAttribute("auth", auth);
@@ -62,10 +71,11 @@ public class UserController {
             System.err.println(e.getMessage());
             passwordMessage = e.getMessage();
         }
-
+        model.addAttribute("user", user);
         model.addAttribute("name", new Field("Text", "name", "Name", user.getName(), nameMessage));
         model.addAttribute("email", new Field("Email", "email", "Email", user.getEmail(), emailMessage));
         model.addAttribute("password", new Field("Password", "password", "Password", null, passwordMessage));
+        model.addAttribute("interests", interestRepository.findAll());
 
         return "create-user";
     }
@@ -103,10 +113,11 @@ public class UserController {
     @GetMapping("/user-profile")
     public String userprofile(Model model, HttpSession session) {
         var user = (User) session.getAttribute("user");
+        var user1 = userService.findUser(user.getEmail());
         model.addAttribute("name", new Field("Text", "name", (String) session.getAttribute("name"), null, null));
         model.addAttribute("email", new Field("Email", "email", (String) session.getAttribute("email"), null, null));
         model.addAttribute("password", new Field("Password", "password", "Password", null, null));
-
+        model.addAttribute("interests", user1.getInterests());
         return "user-profile";
     }
 
@@ -159,6 +170,25 @@ public class UserController {
         }   catch (NullPointerException e) {
             System.err.println(e.getMessage());
         }
+        return "redirect:/users/user-profile";
+    }
+
+    @PostMapping("/update-interest")
+    public String updateInterest(@ModelAttribute("user") User user,
+                                 @RequestParam(value = "selectedInterests", required = false) List<Long> selectedInterestIds, HttpSession session, Model model) {
+        String nameMessage = "";
+        try {
+            var user1 = (User) session.getAttribute("user");
+            List<Interest> interestList = (List<Interest>) interestRepository.findAllById(selectedInterestIds);
+            userService.updateUserInterest(interestList, user1.getEmail());
+        }  catch (NullPointerException e) {
+            System.err.println(e.getMessage());
+        } catch (InvalidNameException e) {
+            System.err.println(e.getMessage());
+            nameMessage = e.getMessage();
+        }
+        model.addAttribute("name", new Field("Text", "name", "Name", user.getName(), nameMessage));
+
         return "redirect:/users/user-profile";
     }
 }

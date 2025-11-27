@@ -2,12 +2,15 @@ package com.friendfinder.services;
 
 import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidNameException;
+import com.friendfinder.model.Interest;
 import com.friendfinder.model.User;
 import com.friendfinder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -44,6 +47,14 @@ public class UserService {
     public void deleteUser(@Param("email") String email) {
         User user = userRepository.findByEmail(email.toLowerCase());
         userRepository.delete(user);
+        return;
+    }
+
+    @Transactional
+    public void updateUserInterest(@Param("interest") List<Interest> interests, @Param("email") String email) {
+        User user = userRepository.findByEmail(email.toLowerCase());
+        user.setInterests(interests);
+        userRepository.save(user);
         return;
     }
 }
