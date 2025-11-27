@@ -54,14 +54,14 @@ class FriendServiceTest {
 
     @Test
     void testAcceptRequest() {
-        // Arrange
+
         when(requestRepo.findById(anyLong())).thenReturn(Optional.of(request));
         when(userRepo.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        // Act
+
         friendService.acceptRequest(1L);
 
-        // Assert
+
         assertTrue(request.isAccepted(), "Friend request should be marked as accepted");
         assertTrue(sender.getFriends().contains(receiver), "Sender should have receiver in friend list");
         assertTrue(receiver.getFriends().contains(sender), "Receiver should have sender in friend list");
@@ -70,4 +70,21 @@ class FriendServiceTest {
         verify(userRepo, times(2)).save(any(User.class));
         verify(requestRepo, times(1)).save(request);
     }
+    @Test
+    void removeFriend_shouldDeleteFriendFromBothLists() {
+        sender.getFriends().add(receiver);
+        receiver.getFriends().add(sender);
+
+        when(userRepo.findById(sender.getUserId())).thenReturn(Optional.of(sender));
+        when(userRepo.findById(receiver.getUserId())).thenReturn(Optional.of(receiver));
+
+        friendService.removeFriend(sender, receiver);
+
+        assertFalse(sender.getFriends().contains(receiver));
+        assertFalse(receiver.getFriends().contains(sender));
+        verify(userRepo, times(2)).save(any(User.class));
+    }
+
 }
+
+
