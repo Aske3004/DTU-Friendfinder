@@ -1,6 +1,7 @@
 <label th:fragment="field(field, showLabel)">
     <span th:if="${showLabel == null or showLabel}" th:text="${field.description}"></span>
-    <input th:type="${field.type}"
+    <input class="force-light"
+           th:type="${field.type}"
            th:name="${field.name}"
            th:placeholder="${field.description}"
            th:value="${field.value}"

@@ -4,6 +4,7 @@ import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidPasswordException;
 import com.friendfinder.model.User;
 import com.friendfinder.services.AuthenticatorService;
+import com.friendfinder.services.FriendService;
 import com.friendfinder.utils.Field;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -14,9 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class AppController {
 
     private final AuthenticatorService authenticatorService;
+    private final FriendService friendService;
 
-    public AppController(AuthenticatorService authenticatorService) {
+
+    public AppController(AuthenticatorService authenticatorService, FriendService friendService) {
         this.authenticatorService = authenticatorService;
+        this.friendService = friendService;
     }
 
     @GetMapping("/")
@@ -24,6 +28,14 @@ public class AppController {
         if (session.getAttribute("auth") == null) {
             return "redirect:/login";
         }
+
+        // Get current user from session
+        var auth = (AuthenticatorService.Auth) session.getAttribute("auth");
+        User currentUser = auth.user();
+
+        // Get user's friends and add to model
+        var friends = friendService.getFriends(currentUser);
+        model.addAttribute("friends", friends);
 
         return "index";
     }

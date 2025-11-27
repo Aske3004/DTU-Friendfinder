@@ -44,76 +44,23 @@
     <aside class="friends-sidebar">
         <h2>Your Friends</h2>
         <div class="friends-list">
-            <div class="friend-item">
+            <div th:each="friend : ${friends}" class="friend-item">
                 <div class="friend-avatar"></div>
                 <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 1</span>
+                    <span class="friend-name" th:text="${friend.name}">Friend Name</span>
                 </div>
             </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 2</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 3</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 4</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 5</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 5</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 5</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 5</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 5</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 5</span>
-                </div>
-            </div>
-            <div class="friend-item">
-                <div class="friend-avatar"></div>
-                <div class="friend-info">
-                    <span class="friend-name">VEN NUMMER 6</span>
+
+            <!-- Show message if no friends -->
+            <div th:if="${#lists.isEmpty(friends)}" class="friend-item">
+                <div class="friend-info" style="text-align: center; width: 100%;">
+                    <span class="friend-name" style="color: #666; font-style: italic;">
+                        No friends to display yet
+                    </span>
                 </div>
             </div>
         </div>
     </aside>
-
-
 </div>
 
 <style>

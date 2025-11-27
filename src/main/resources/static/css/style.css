@@ -90,3 +90,9 @@ h2 {
     color: #990000;
     font-weight: bold;
 }
+
+.force-light {
+    background-color: white !important;
+    color: black !important;
+    color-scheme: light; /* prevents browser from auto-dark-mode styling */
+}
