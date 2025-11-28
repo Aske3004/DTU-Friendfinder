@@ -1,38 +1,158 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head th:replace="~{fragments/head :: head}"></head>
 <body class="container-fluid">
 <header th:replace="~{fragments/header :: header}"></header>
 
-<h2 style="text-align: center;">Friend Requests</h2>
+<h1 style="text-align: center;">All Friend Requests</h1>
 
-<table style="margin: auto; width: 80%;">
-    <thead>
-    <tr>
-        <th>From</th>
-        <th style="text-align:center;">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
 
-    <tr th:each="req : ${requests}">
-        <td th:text="${req.sender.name} + ' (' + ${req.sender.email} + ')'">Sender info</td>
-        <td style="display: flex; justify-content: center; gap: 0.5rem;">
-            <form th:action="@{'/friends/accept/' + ${req.id}}" method="post">
-                <button type="submit" role="button">✅ Accept</button>
-            </form>
-            <form th:action="@{'/friends/decline/' + ${req.id}}" method="post">
-                <button type="submit" role="button" class="secondary">❌ Decline</button>
-            </form>
-        </td>
-    </tr>
 
-    <tr th:if="${#lists.isEmpty(requests)}">
-        <td colspan="2" style="text-align: center;">
-            <em>No pending friend requests</em>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
+<!-- Tabs header -->
+<div style="display:flex; justify-content:center; gap:1.5rem; margin-bottom:1rem; align-self: center">
+    <div style="width: 48.5%; text-align: right;">
+        <a href="#" id="tab-sent-btn">Sent</a>
+    </div>
+    |
+    <div style="width: 51.5%; text-align: left;">
+        <a href="#" id="tab-received-btn" class="secondary">Received</a>
+    </div>
+</div>
+
+<!-- SENT TAB -->
+<div id="tab-sent" class="tab-content active" style="padding-bottom: 2rem">
+    <table style="margin:auto; width:80%;">
+        <thead>
+        <tr style="height: 2.5rem">
+            <th>To</th>
+            <th style="text-align:center; width: 40%;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr style="text-align:center; height: 4rem; vertical-align: middle;" th:each="req : ${sentRequests}">
+            <td th:text="${req.receiver.name + ' (' + req.receiver.email + ')'}">
+                Receiver info
+            </td>
+            <td style="text-align:center;">
+                <button disabled class="outline secondary">
+                    Pending
+                </button>
+                <!-- TODO change pending to remove when hovered -->
+            </td>
+        </tr>
+
+        <tr style="text-align:center; height: 4rem; vertical-align: middle;" th:if="${#lists.isEmpty(sentRequests)}">
+            <td colspan="2" style="text-align:center;">
+                <em>No sent requests</em>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- RECEIVED TAB -->
+<div id="tab-received" class="tab-content" style="display:none; padding-bottom: 2rem">
+    <table style="margin:auto; width:80%;">
+        <thead>
+        <tr style="height:2.5rem">
+            <th>From</th>
+            <th style="text-align:center; width: 40%;">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr style="text-align:center; height: 4rem; vertical-align: middle;" th:each="req : ${receivedRequests}">
+            <td th:text="${req.sender.name + ' (' + req.sender.email + ')'}">
+                Sender info
+            </td>
+            <td style="text-align: center;">
+                <span>
+                    <button class="accept-btn outline contrast"
+                            th:data-id="${req.id}">
+                        ✅ Accept
+                    </button>
+
+                    <button class="decline-btn outline contrast"
+                            th:data-id="${req.id}">
+                        ❌ Decline
+                    </button>
+                </span>
+            </td>
+        </tr>
+
+        <tr style="text-align:center; height: 4rem; vertical-align: middle;" th:if="${#lists.isEmpty(receivedRequests)}">
+            <td colspan="2" style="text-align:center;">
+                <em>No received requests</em>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
+
+
+<!-- Tiny bit of JS to switch tabs -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const sentBtn = document.getElementById("tab-sent-btn");
+        const receivedBtn = document.getElementById("tab-received-btn");
+        const sentTab = document.getElementById("tab-sent");
+        const receivedTab = document.getElementById("tab-received");
+
+        function showSent() {
+            sentTab.style.display = "block";
+            receivedTab.style.display = "none";
+            sentBtn.classList.remove("secondary");
+            receivedBtn.classList.add("secondary");
+        }
+
+        function showReceived() {
+            sentTab.style.display = "none";
+            receivedTab.style.display = "block";
+            sentBtn.classList.add("secondary");
+            receivedBtn.classList.remove("secondary");
+        }
+
+        sentBtn.addEventListener("click", showSent);
+        receivedBtn.addEventListener("click", showReceived);
+
+        // Accept friend request
+        document.querySelectorAll("button.accept-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+
+                fetch(`/friends/accept/${id}`, { method: "POST" })
+                    .then(() => {
+                        // turn row into "Already friends"
+                        const span = document.createElement("span");
+                        span.textContent = "✅ Already friends";
+                        span.style.color = "green";
+                        span.style.fontWeight = "bold";
+                        button.parentElement.replaceWith(span);
+                    })
+                    .catch(err => console.error("Accept failed:", err));
+            });
+        });
+
+        // Decline friend request
+        document.querySelectorAll("button.decline-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+
+                fetch(`/friends/decline/${id}`, { method: "POST" })
+                    .then(() => {
+                        // turn row into "Request declined"
+                        const span = document.createElement("span");
+                        span.textContent = "❌ Declined";
+                        span.style.color = "gray";
+                        span.style.fontStyle = "italic";
+                        button.parentElement.replaceWith(span);
+                    })
+                    .catch(err => console.error("Decline failed:", err));
+            });
+        });
+    });
+</script>

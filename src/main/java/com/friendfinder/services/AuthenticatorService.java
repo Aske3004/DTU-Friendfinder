@@ -5,7 +5,7 @@ import com.friendfinder.exceptions.InvalidNameException;
 import com.friendfinder.exceptions.InvalidPasswordException;
 import com.friendfinder.model.User;
 import com.friendfinder.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;

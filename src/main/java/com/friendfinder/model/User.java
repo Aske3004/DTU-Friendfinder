@@ -8,6 +8,7 @@ import com.friendfinder.exceptions.InvalidNameException;
 import com.friendfinder.exceptions.InvalidPasswordException;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
-    private List<User> friends;
+    private List<User> friends = new ArrayList<>();
     @ManyToMany
     @JoinTable(
             name = "user_interest",

@@ -3,6 +3,7 @@ package com.friendfinder.controller;
 import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidNameException;
 import com.friendfinder.exceptions.InvalidPasswordException;
+import com.friendfinder.model.FriendRequest;
 import com.friendfinder.model.Interest;
 import com.friendfinder.model.User;
 import com.friendfinder.repository.InterestRepository;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/users")
@@ -79,6 +81,7 @@ public class UserController {
 
         return "create-user";
     }
+
     @GetMapping("/all")
     public String listUsers(Model model, HttpSession session) {
         var auth = (AuthenticatorService.Auth) session.getAttribute("auth");
@@ -91,11 +94,28 @@ public class UserController {
         model.addAttribute("currentUser", currentUser);
 
         // Liste af e-mails som brugeren allerede har sendt requests til
-        var sentRequests = friendService.getPendingRequests(currentUser)
+        var sentRequests = friendService.getPendingRequestsAsSender(currentUser)
                 .stream()
                 .map(req -> req.getReceiver().getEmail())
                 .toList();
         model.addAttribute("sentRequestEmails", sentRequests);
+
+        // Liste af modtaget requests
+        var receivedRequests = friendService.getPendingRequestsAsReceiver(currentUser);
+
+        // Liste af e-mails som brugeren allerede har modtaget requests fra
+        var receivedRequestEmails = receivedRequests.stream()
+                .map(req -> req.getSender().getEmail())
+                .toList();
+        model.addAttribute("receivedRequestEmails", receivedRequestEmails);
+
+        // map senderEmail -> requestId
+        var receivedRequestIdByEmail = receivedRequests.stream()
+                .collect(Collectors.toMap(
+                        req -> req.getSender().getEmail(),
+                        FriendRequest::getId
+                ));
+        model.addAttribute("receivedRequestIdByEmail", receivedRequestIdByEmail);
 
         // Liste af e-mails som allerede er venner
         var friendEmails = friendService.getFriends(currentUser)

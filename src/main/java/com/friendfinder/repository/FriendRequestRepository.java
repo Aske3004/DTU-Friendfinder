@@ -11,4 +11,6 @@ import java.util.List;
 public interface FriendRequestRepository extends CrudRepository<FriendRequest, Long> {
     List<FriendRequest> findByReceiver(User receiver);
     FriendRequest findBySenderAndReceiver(User sender, User receiver);
+
+    List<FriendRequest> findBySender(User sender);
 }

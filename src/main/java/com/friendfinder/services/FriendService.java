@@ -4,7 +4,7 @@ import com.friendfinder.model.FriendRequest;
 import com.friendfinder.model.User;
 import com.friendfinder.repository.FriendRequestRepository;
 import com.friendfinder.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,14 @@ public class FriendService {
     @Autowired
     private ChatService chatService;
 
-    public List<FriendRequest> getPendingRequests(User receiver) {
+    public List<FriendRequest> getPendingRequestsAsSender(User sender) {
+        return requestRepo.findBySender(sender)
+                .stream()
+                .filter(req -> !req.isAccepted())
+                .toList();
+    }
+
+    public List<FriendRequest> getPendingRequestsAsReceiver(User receiver) {
         return requestRepo.findByReceiver(receiver)
                 .stream()
                 .filter(req -> !req.isAccepted())
@@ -31,7 +38,9 @@ public class FriendService {
 
     @Transactional
     public void sendRequest(User sender, User receiver) {
-        if (requestRepo.findBySenderAndReceiver(sender, receiver) != null) return;
+        if (requestRepo.findBySenderAndReceiver(sender, receiver) != null ||
+                requestRepo.findBySenderAndReceiver(receiver, sender) != null ||
+                areFriends(sender, receiver)) return;
         requestRepo.save(new FriendRequest(sender, receiver));
     }
 
@@ -63,9 +72,6 @@ public class FriendService {
         return managedUser != null ? managedUser.getFriends() : List.of();
     }
 
-    public boolean hasPendingRequest(User sender, User receiver) {
-        return requestRepo.findBySenderAndReceiver(sender, receiver) != null;
-    }
     public boolean areFriends(User user1, User user2) {
         User fullUser1 = userRepo.findById(user1.getUserId()).orElse(null);
         if (fullUser1 == null) return false;

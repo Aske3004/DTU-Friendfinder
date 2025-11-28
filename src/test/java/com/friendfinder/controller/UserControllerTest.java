@@ -8,8 +8,6 @@ import com.friendfinder.services.FriendService;
 import com.friendfinder.services.UserService;
 import com.friendfinder.repository.InterestRepository;
 import com.friendfinder.exceptions.InvalidEmailException;
-import com.friendfinder.exceptions.InvalidNameException;
-import com.friendfinder.exceptions.InvalidPasswordException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -109,7 +107,8 @@ class UserControllerTest {
         currentUser.setEmail("s123456@student.dtu.dk");
 
         when(userService.findAllUsers()).thenReturn(List.of(currentUser));
-        when(friendService.getPendingRequests(any(User.class))).thenReturn(List.of());
+        when(friendService.getPendingRequestsAsSender(any(User.class))).thenReturn(List.of());
+        when(friendService.getPendingRequestsAsReceiver(any(User.class))).thenReturn(List.of());
         when(friendService.getFriends(any(User.class))).thenReturn(List.of());
 
         MockHttpSession session = new MockHttpSession();

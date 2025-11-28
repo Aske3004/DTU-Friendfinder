@@ -10,36 +10,65 @@
 
 <table style="margin: auto; width: 80%;">
     <thead>
-    <tr>
+    <tr style="height: 2.5rem">
         <th>Name</th>
         <th>Email</th>
-        <th>Action</th>
+        <th style="text-align:center; width: 40%">Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="user : ${users}">
+    <tr th:each="user : ${users}" style="height: 4rem">
         <td th:text="${user.name}"></td>
         <td th:text="${user.email}"></td>
         <td style="text-align: center;">
 
-            <!-- Vis "You" på ens egen bruger -->
-            <span th:if="${user.email == currentUser.email}">You</span>
+            <!-- Own user row -->
+            <span th:if="${user.email == currentUser.email}">
+                You
+            </span>
 
-            <!-- Vis "Already friends" -->
-            <span th:if="${#lists.contains(friendEmails, user.email)}"
-                  style="color: green; font-weight: bold;">✅ Already friends</span>
+            <!-- All other users -->
+            <span th:if="${user.email != currentUser.email}">
 
-            <!-- Vis "Request sent" -->
-            <span th:if="${#lists.contains(sentRequestEmails, user.email)}"
-                  style="color: gray;">Request sent</span>
+                <!-- Already friends -->
+                <span th:if="${#lists.contains(friendEmails, user.email)}"
+                      style="color: green; font-weight: bold;">
+                    ✅ Already friends
+                </span>
 
-            <!-- Kun vis knap, hvis der ikke er sendt request og de ikke er venner -->
-            <a th:if="${user.email != currentUser.email
-          and !#lists.contains(sentRequestEmails, user.email)
-          and !#lists.contains(friendEmails, user.email)}"
-               th:href="@{'/friends/add/' + ${user.email}}"
-               role="button"
-               class="secondary send-request">Send request</a>
+                <!-- TODO change to the same as the friend request list -->
+                <!-- Request sent -->
+                <span th:if="${!#lists.contains(friendEmails, user.email)
+                                and #lists.contains(sentRequestEmails, user.email)}"
+                      style="color: gray; font-style: italic">
+                    Request sent
+                </span>
+
+                <!-- Accept / Decline -->
+                <span th:if="${!#lists.contains(friendEmails, user.email)
+                                and !#lists.contains(sentRequestEmails, user.email)
+                                and #lists.contains(receivedRequestEmails, user.email)}">
+                    <button class="accept-btn outline contrast"
+                            th:data-id="${receivedRequestIdByEmail[user.email]}">
+                        ✅ Accept
+                    </button>
+
+                    <button class="decline-btn outline contrast"
+                            th:data-id="${receivedRequestIdByEmail[user.email]}">
+                        ❌ Decline
+                    </button>
+                </span>
+
+                        <!-- Send request (fallback) -->
+                <a th:if="${!#lists.contains(friendEmails, user.email)
+                          and !#lists.contains(sentRequestEmails, user.email)
+                          and !#lists.contains(receivedRequestEmails, user.email)}"
+                   th:href="@{'/friends/add/' + ${user.email}}"
+                   role="button"
+                   class="send-request outline contrast">
+                    Send request
+                </a>
+            </span>
 
         </td>
     </tr>
@@ -49,22 +78,62 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("a.send-request").forEach(button => {
-        button.addEventListener("click", (event) => {
-          event.preventDefault();
-          const url = button.getAttribute("href");
 
-          fetch(url, { method: "GET" })
-            .then(() => {
-              const span = document.createElement("span");
-              span.textContent = "Request sent";
-              span.style.color = "gray";
-              span.style.fontStyle = "italic";
-              button.replaceWith(span);
-            })
-            .catch(err => console.error("Error sending request:", err));
+        // Send friend request
+        document.querySelectorAll("a.send-request").forEach(button => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                const url = button.getAttribute("href");
+
+                fetch(url, { method: "GET" })
+                    .then(() => {
+                        const span = document.createElement("span");
+                        span.textContent = "Request sent";
+                        span.style.color = "gray";
+                        span.style.fontStyle = "italic";
+                        button.replaceWith(span);
+                    })
+                    .catch(err => console.error("Error sending request:", err));
+            });
         });
-      });
+
+
+        // Accept friend request
+        document.querySelectorAll("button.accept-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+
+                fetch(`/friends/accept/${id}`, { method: "POST" })
+                    .then(() => {
+                        // turn row into "Already friends"
+                        const span = document.createElement("span");
+                        span.textContent = "✅ Already friends";
+                        span.style.color = "green";
+                        span.style.fontWeight = "bold";
+                        button.parentElement.replaceWith(span);
+                    })
+                    .catch(err => console.error("Accept failed:", err));
+            });
+        });
+
+        // Decline friend request
+        document.querySelectorAll("button.decline-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+
+                fetch(`/friends/decline/${id}`, { method: "POST" })
+                    .then(() => {
+                        // turn row into "Request declined"
+                        const span = document.createElement("span");
+                        span.textContent = "❌ Declined";
+                        span.style.color = "gray";
+                        span.style.fontStyle = "italic";
+                        button.parentElement.replaceWith(span);
+                    })
+                    .catch(err => console.error("Decline failed:", err));
+            });
+        });
+
     });
 </script>
 

@@ -4,28 +4,56 @@
 <body class="container-fluid">
 <header th:replace="~{fragments/header :: header}"></header>
 
-<h2 style="text-align: center;">Your Friends</h2>
+<h1 style="text-align: center;">Your Friends</h1>
 
-<table style="margin: auto; width: 70%;">
+<table style="margin: auto; width: 80%;">
     <thead>
-    <tr><th>Name</th><th>Email</th></tr>
+        <tr style="height: 2.5rem">
+            <th>Name</th>
+            <th>Email</th>
+            <th style="text-align:center; width: 40%">Action</th>
+        </tr>
     </thead>
     <tbody>
-    <tr th:each="friend : ${friends}">
-        <td th:text="${friend.name}"></td>
-        <td th:text="${friend.email}"></td>
-        <td style="text-align: center;">
-            <form th:action="@{'/friends/remove/' + ${friend.email}}" method="post"
-                  onsubmit="return confirm('Are you sure you want to remove this friend?');">
-                <button type="submit" role="button" class="secondary">❌ Remove</button>
-            </form>
-        </td>
-    </tr>
+        <tr th:each="friend : ${friends}" style="height: 4rem">
+            <td th:text="${friend.name}"></td>
+            <td th:text="${friend.email}"></td>
+            <td style="text-align: center;">
+                <span>
+                    <button class="remove-btn outline contrast"
+                            th:data-id="${friend.email}">
+                        ❌ Remove
+                    </button>
+                </span>
+            </td>
+        </tr>
 
-    <tr th:if="${#lists.isEmpty(friends)}">
-        <td colspan="2" style="text-align: center;"><em>You don’t have any friends yet 😢</em></td>
-    </tr>
+        <tr th:if="${#lists.isEmpty(friends)}" style="height: 4rem">
+            <td colspan="3" style="text-align: center;"><em>You don’t have any friends yet 😢</em></td>
+        </tr>
     </tbody>
 </table>
 </body>
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Accept friend request
+        document.querySelectorAll("button.remove-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const id = button.dataset.id;
+
+                fetch(`/friends/remove/${id}`, { method: "POST" })
+                    .then(() => {
+                        // turn row into "Already friends"
+                        const span = document.createElement("span");
+                        span.textContent = "❌ Removed";
+                        span.style.color = "gray";
+                        button.parentElement.replaceWith(span);
+                    })
+                    .catch(err => console.error("Remove failed:", err));
+            });
+        });
+
+    });
+</script>

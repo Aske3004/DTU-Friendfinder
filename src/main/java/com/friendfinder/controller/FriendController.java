@@ -35,7 +35,16 @@ public class FriendController {
         var auth = (AuthenticatorService.Auth) session.getAttribute("auth");
         if (auth == null) return "redirect:/login";
 
-        model.addAttribute("requests", friendService.getPendingRequests(auth.user()));
+        var user = auth.user();
+
+        // Liste af sendt requests
+        var sentRequests = friendService.getPendingRequestsAsSender(user);
+        model.addAttribute("sentRequests", sentRequests);
+
+        // Liste af modtaget requests
+        var receivedRequests = friendService.getPendingRequestsAsReceiver(user);
+        model.addAttribute("receivedRequests", receivedRequests);
+
         return "friend-requests";
     }
 
@@ -81,5 +90,7 @@ public class FriendController {
 
         return "redirect:/friends/list";
     }
+
+    // TODO remove request
 
 }
