@@ -1,7 +1,7 @@
 package com.friendfinder.services;
 
 
-
+import com.friendfinder.model.Interest;
 import com.friendfinder.repository.UserRepository;
 import com.friendfinder.model.User;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
+import java.util.ArrayList;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -55,5 +57,9 @@ public class UserServiceTest {
         // Assert: Brugeren skal være fjernet
         assertThat(userRepository.findByEmail("delete@example.com")).isNull();
     }
+
+
+
+
 
 }
