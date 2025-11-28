@@ -19,6 +19,9 @@ public class FriendService {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private ChatService chatService;
+
     public List<FriendRequest> getPendingRequests(User receiver) {
         return requestRepo.findByReceiver(receiver)
                 .stream()
@@ -44,6 +47,8 @@ public class FriendService {
             userRepo.save(sender);
             userRepo.save(receiver);
             requestRepo.save(req);
+
+            createDirectChatForFriends(sender, receiver);
         }
     }
 
@@ -77,6 +82,15 @@ public class FriendService {
 
         userRepo.save(managedUser);
         userRepo.save(managedFriend);
+    }
+
+    private void createDirectChatForFriends(User user1, User user2) {
+        try {
+            chatService.createDirectChat(user1.getUserId(), user2.getUserId());
+        } catch (Exception e) {
+            System.err.println("Error creating direct chat for new friends: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

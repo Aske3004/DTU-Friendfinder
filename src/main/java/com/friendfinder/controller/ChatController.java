@@ -293,6 +293,4 @@ public class ChatController {
         public long getTimestamp() { return timestamp; }
         public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
     }
-
-    //  "bruger har læst besked"
 }
