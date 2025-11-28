@@ -25,14 +25,12 @@ public class FriendService {
     public List<FriendRequest> getPendingRequestsAsSender(User sender) {
         return requestRepo.findBySender(sender)
                 .stream()
-                .filter(req -> !req.isAccepted())
                 .toList();
     }
 
     public List<FriendRequest> getPendingRequestsAsReceiver(User receiver) {
         return requestRepo.findByReceiver(receiver)
                 .stream()
-                .filter(req -> !req.isAccepted())
                 .toList();
     }
 
@@ -42,7 +40,7 @@ public class FriendService {
         if (friendRequest != null){
             acceptRequest(friendRequest.getId());
             return;
-        } else if(areFriends(sender, receiver)){
+        } else if(areFriends(sender, receiver) || requestRepo.findBySenderAndReceiver(sender, receiver) != null){
             return;
         }
         requestRepo.save(new FriendRequest(sender, receiver));
@@ -51,15 +49,14 @@ public class FriendService {
     @Transactional
     public void acceptRequest(Long requestId) {
         FriendRequest req = requestRepo.findById(requestId).orElse(null);
-        if (req != null && !req.isAccepted()) {
-            req.setAccepted(true);
+        if (req != null ) {
             User sender = req.getSender();
             User receiver = req.getReceiver();
             sender.addFriend(receiver);
             receiver.addFriend(sender);
             userRepo.save(sender);
             userRepo.save(receiver);
-            requestRepo.save(req);
+            requestRepo.delete(req);
 
             createDirectChatForFriends(sender, receiver);
         }

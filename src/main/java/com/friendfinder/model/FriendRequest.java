@@ -16,8 +16,6 @@ public class FriendRequest {
     @ManyToOne
     private User receiver;
 
-    private boolean accepted = false;
-
     public FriendRequest() {}
 
     public FriendRequest(User sender, User receiver) {
@@ -29,7 +27,4 @@ public class FriendRequest {
     public Long getId() { return id; }
     public User getSender() { return sender; }
     public User getReceiver() { return receiver; }
-    public boolean isAccepted() { return accepted; }
-
-    public void setAccepted(boolean accepted) { this.accepted = accepted; }
 }

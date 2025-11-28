@@ -89,8 +89,8 @@ class FriendServiceTest {
         friendService.acceptRequest(request.getId());
 
         // Get updated request and check it's accepted
-        FriendRequest updated = requestRepo.findById(request.getId()).orElseThrow();
-        assertTrue(updated.isAccepted());
+        FriendRequest updated = requestRepo.findById(request.getId()).orElse(null);
+        assertNull(updated);
 
         // Get updated sender and receiver
         User updatedSender = userRepo.findById(sender.getUserId()).orElseThrow();
@@ -165,18 +165,15 @@ class FriendServiceTest {
 
     @Test
     void sendFriendRequest_shouldNotCreateDuplicate_whenPendingRequestAlreadyExists() {
-        // Setup already created a pending request
-        long initialRequestCount = requestRepo.count();
-
         // Both sides try to create another request while one is already pending
-        friendService.sendRequest(receiver, sender);   // opposite direction
         friendService.sendRequest(sender, receiver);   // same direction
+        friendService.sendRequest(receiver, sender);   // opposite direction
 
 
         // Assert it's still only the original pending request in the DB
         long finalRequestCount = requestRepo.count();
-        assertEquals(initialRequestCount, finalRequestCount,
-                "No additional friend requests should be created when one is already pending");
+        assertEquals(0, finalRequestCount,
+                "No friend requests between the two should be present, when they have become friends");
 
         // Also assert they are friends
         User updatedSender = userRepo.findById(sender.getUserId()).orElseThrow();
