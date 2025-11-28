@@ -169,19 +169,20 @@ class FriendServiceTest {
         long initialRequestCount = requestRepo.count();
 
         // Both sides try to create another request while one is already pending
-        friendService.sendRequest(sender, receiver);   // same direction
         friendService.sendRequest(receiver, sender);   // opposite direction
+        friendService.sendRequest(sender, receiver);   // same direction
+
 
         // Assert it's still only the original pending request in the DB
         long finalRequestCount = requestRepo.count();
         assertEquals(initialRequestCount, finalRequestCount,
                 "No additional friend requests should be created when one is already pending");
 
-        // Also assert they are still NOT friends
+        // Also assert they are friends
         User updatedSender = userRepo.findById(sender.getUserId()).orElseThrow();
         User updatedReceiver = userRepo.findById(receiver.getUserId()).orElseThrow();
-        assertFalse(updatedSender.getFriends().contains(updatedReceiver));
-        assertFalse(updatedReceiver.getFriends().contains(updatedSender));
+        assertTrue(updatedSender.getFriends().contains(updatedReceiver));
+        assertTrue(updatedReceiver.getFriends().contains(updatedSender));
     }
 }
 

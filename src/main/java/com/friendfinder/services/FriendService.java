@@ -38,9 +38,13 @@ public class FriendService {
 
     @Transactional
     public void sendRequest(User sender, User receiver) {
-        if (requestRepo.findBySenderAndReceiver(sender, receiver) != null ||
-                requestRepo.findBySenderAndReceiver(receiver, sender) != null ||
-                areFriends(sender, receiver)) return;
+        var friendRequest = requestRepo.findBySenderAndReceiver(receiver, sender);
+        if (friendRequest != null){
+            acceptRequest(friendRequest.getId());
+            return;
+        } else if(areFriends(sender, receiver)){
+            return;
+        }
         requestRepo.save(new FriendRequest(sender, receiver));
     }
 
