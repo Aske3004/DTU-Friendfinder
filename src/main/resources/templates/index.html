@@ -14,29 +14,39 @@
             <p>Discover new people around DTU</p>
         </div>
 
-        <div class="profile-card">
+        <div class="profile-card" th:if="${firstPotential != null}">
             <div class="profile-header">
                 <div class="profile-avatar"></div>
                 <div class="profile-info">
-                    <h2 class="profile-name">HENT BRUGERS NAVN </h2>
-                    <p class="profile-details">PROFIL DETALJER (STUDIERETNING, EVT SEMESTER.</p>
+                    <h2 class="profile-name" th:text="${firstPotential.name}"></h2>
+                    <p class="profile-details">Studies Softwaretechnology on third semester</p>
                     <div class="profile-interests">
-                        <span class="interest-tag">BRUGER INTERESSE 1</span>
-                        <span class="interest-tag">BRUGER INTERESSE 2</span>
-                        <span class="interest-tag">BRUGER INTERESSE 3</span>
+                        <span class="interest-tag" th:each="interest : ${firstPotential.getInterests()}" th:text="${interest.getName()}"></span>
                     </div>
                 </div>
             </div>
 
             <div class="profile-bio">
                 <h3>About Me</h3>
-                <p>BRUG FUNKTION TIL AT HENTE DEN ANDEN BRUGERS ABOUT ME/BIO. BRUG FUNKTION TIL AT HENTE DEN ANDEN BRUGERS ABOUT ME/BIO. BRUG FUNKTION TIL AT HENTE DEN ANDEN BRUGERS ABOUT ME/BIO.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel urna at velit consequat pulvinar non vitae nisi. Maecenas sed porta ante, bibendum blandit odio. Sed vitae libero leo. Curabitur a ante sed enim ultrices ullamcorper sed at lacus. Curabitur ultrices lectus in quam pretium lobortis.</p>
             </div>
 
             <div class="action-buttons">
-                <button class="action-btn dislike-btn">👎 Pass</button>
-                <button class="action-btn like-btn">👍 Like</button>
+                <form action="/dislike" method="post">
+                    <input type="hidden" name="email" th:value="${firstPotential.getEmail()}">
+                    <button type="submit" class="action-btn dislike-btn">👎 Pass</button>
+                </form>
+
+                <form action="/like" method="post">
+                    <input type="hidden" name="email" th:value="${firstPotential.getEmail()}">
+                    <button type="submit" class="action-btn like-btn">👍 Add Friend</button>
+                </form>
             </div>
+        </div>
+
+        <div class="profile-card" th:unless="${firstPotential != null}">
+            <h2>No more people to show</h2>
+            <p>Come back later to discover new DTU students.</p>
         </div>
     </main>
 

@@ -10,7 +10,7 @@
 <form th:action="@{/users/update-name}" th:object="${session.auth.user()}" method="post">
     <label th:replace="~{fragments/field :: field(${name}, false)}"></label>
     <!--<label th:replace="~{fragments/field :: field(${password})}"></label>-->
-    <button type="submit">Update</button>
+    <button type="submit" class="login-btn">Update</button>
 </form>
 <form th:action="@{/users/update-interest}" th:object="${session.auth.user()}" method="post">
 <div class="interest-selection">
@@ -30,7 +30,7 @@
 </form>
 
 <form th:action="@{/users/delete-user}" th:object="${session.auth.user()}" method="post">
-    <button type="submit">Delete</button>
+    <button type="submit" class="login-btn">Delete</button>
 </form>
 </body>
 </html>

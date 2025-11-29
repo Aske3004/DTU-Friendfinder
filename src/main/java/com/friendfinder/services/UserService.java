@@ -2,8 +2,10 @@ package com.friendfinder.services;
 
 import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidNameException;
+import com.friendfinder.model.FriendRequest;
 import com.friendfinder.model.Interest;
 import com.friendfinder.model.User;
+import com.friendfinder.repository.FriendRequestRepository;
 import com.friendfinder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +20,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FriendRequestRepository friendRequestRepository;
 
     public Iterable<User> findAllUsers() {
         return userRepository.findAll();
@@ -58,6 +62,14 @@ public class UserService {
 
         List<User> friends = user.getFriends();
         allUsers.removeAll(friends);
+
+        List<FriendRequest> addedFriends = friendRequestRepository.findBySender(user);
+        List<User> addedUsers = new ArrayList<>();
+        for(FriendRequest friendRequest : addedFriends) {
+            addedUsers.add(friendRequest.getReceiver());
+        }
+
+        allUsers.removeAll(addedUsers);
 
         List<Interest> userInterests = user.getInterests();
 

@@ -3,8 +3,10 @@ package com.friendfinder.controller;
 import com.friendfinder.exceptions.InvalidEmailException;
 import com.friendfinder.exceptions.InvalidPasswordException;
 import com.friendfinder.model.User;
+import com.friendfinder.repository.UserRepository;
 import com.friendfinder.services.AuthenticatorService;
 import com.friendfinder.services.FriendService;
+import com.friendfinder.services.UserService;
 import com.friendfinder.utils.Field;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -17,10 +19,15 @@ public class AppController {
     private final AuthenticatorService authenticatorService;
     private final FriendService friendService;
 
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public AppController(AuthenticatorService authenticatorService, FriendService friendService) {
+
+    public AppController(AuthenticatorService authenticatorService, FriendService friendService, UserService userService, UserRepository userRepository) {
         this.authenticatorService = authenticatorService;
         this.friendService = friendService;
+        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/")
@@ -37,8 +44,32 @@ public class AppController {
         var friends = friendService.getFriends(currentUser);
         model.addAttribute("friends", friends);
 
+        var potentialFriends = userService.findPotentialFriends(currentUser.getEmail());
+        if (potentialFriends.isEmpty()) {
+            model.addAttribute("firstPotential", null);
+        }
+        else {
+            model.addAttribute("firstPotential", potentialFriends.get(0));
+        }
+
         return "index";
     }
+
+    @PostMapping("/like")
+    public String like(@RequestParam String email, HttpSession session) {
+        var auth = (AuthenticatorService.Auth) session.getAttribute("auth");
+        if (auth == null) return "redirect:/login";
+
+        User sender = auth.user();
+        User receiver = userRepository.findByEmail(email.toLowerCase());
+        System.out.println("Sender: " + sender.getEmail() + ", receiver: " + email);
+        if (receiver != null && !receiver.getEmail().equals(sender.getEmail())) {
+            friendService.sendRequest(sender, receiver);
+        }
+        return "redirect:/";
+    }
+
+
 
     @GetMapping("/login")
     public String login(Model model) {
