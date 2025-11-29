@@ -54,7 +54,7 @@ public class UserService {
     }
 
     @Transactional
-    public List<User> findPotentialFriends(String email) {
+    public List<User> findPotentialFriends(String email, List<String> disliked) {
         User user = userRepository.findByEmail(email.toLowerCase());
 
         List<User> allUsers = (List<User>) userRepository.findAll();
@@ -70,6 +70,11 @@ public class UserService {
         }
 
         allUsers.removeAll(addedUsers);
+
+        if (disliked != null) {
+            allUsers.removeIf(u -> disliked.contains(u.getEmail()));
+        }
+
 
         List<Interest> userInterests = user.getInterests();
 

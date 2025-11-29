@@ -13,6 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class AppController {
 
@@ -44,7 +47,8 @@ public class AppController {
         var friends = friendService.getFriends(currentUser);
         model.addAttribute("friends", friends);
 
-        var potentialFriends = userService.findPotentialFriends(currentUser.getEmail());
+        var disliked = (List<String>) session.getAttribute("disliked");
+        var potentialFriends = userService.findPotentialFriends(currentUser.getEmail(), disliked);
         if (potentialFriends.isEmpty()) {
             model.addAttribute("firstPotential", null);
         }
@@ -66,6 +70,21 @@ public class AppController {
         if (receiver != null && !receiver.getEmail().equals(sender.getEmail())) {
             friendService.sendRequest(sender, receiver);
         }
+        return "redirect:/";
+    }
+
+    @PostMapping("/dislike")
+    public String dislike(@RequestParam String email, HttpSession session) {
+        var auth = (AuthenticatorService.Auth) session.getAttribute("auth");
+        if (auth == null) return "redirect:/login";
+
+        List<String> disliked = (List<String>) session.getAttribute("disliked");
+        if (disliked == null) {
+            disliked = new ArrayList<>();
+        }
+        disliked.add(email.toLowerCase());
+        session.setAttribute("disliked", disliked);
+
         return "redirect:/";
     }
 
