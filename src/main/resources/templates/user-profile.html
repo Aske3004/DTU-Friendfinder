@@ -32,5 +32,8 @@
 <form th:action="@{/users/delete-user}" th:object="${session.auth.user()}" method="post">
     <button type="submit" class="login-btn">Delete</button>
 </form>
+<footer th:replace="fragments/footer :: footer">
+
+</footer>
 </body>
 </html>
